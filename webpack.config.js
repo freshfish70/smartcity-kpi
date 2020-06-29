@@ -14,6 +14,11 @@ module.exports = {
 	},
 	resolve: {
 		extensions: ['.tsx', '.ts', '.js'],
+		alias: {
+			'@lib': path.resolve(__dirname, 'src/js/helpers'),
+			'@config': path.resolve(__dirname, 'src/js/helpers'),
+			'@helpers': path.resolve(__dirname, 'src/js/helpers'),
+		},
 	},
 	output: {
 		filename: 'bundle.js',
