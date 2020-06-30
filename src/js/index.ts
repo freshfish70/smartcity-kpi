@@ -20,7 +20,7 @@ async function start() {
 		.select('svg') // Selects an element; SVG element
 		.attr('width', width)
 		.attr('height', height)
-		.style('font', '10px sans-serif')
+		.style('font', '12px sans-serif')
 
 	const g = svg
 		.append('g')
