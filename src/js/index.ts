@@ -96,29 +96,18 @@ async function start() {
 			) as any
 		})
 
-	function computeTextRotation(d: any) {
-		var angle = ((d.x0 + d.x1) / Math.PI) * 90
-		return angle < 180 ? angle - 90 : angle + 90
-	}
-
-	function computeTextPosition(d: any) {
-		if (d.children) return 'middle'
-		var angle = ((d.x0 + d.x1) / Math.PI) * 90
-		return angle < 180 ? 'start' : 'end'
-	}
-
 	svg
 		.selectAll('.node')
 		.attr('text-anchor', function (d: any) {
-			return computeTextPosition(d)
+			return getTextAnchor(d)
 		})
 		.append('text')
 		.attr('transform', function (d: any) {
-			return `translate(${arc.centroid(d)})rotate(${computeTextRotation(d)})`
+			return `translate(${arc.centroid(d)})rotate(${getTextRotation(d)})`
 		})
 		.attr('dx', (d: any) => {
 			if (!d.children)
-				return (computeTextRotation(d) < 180 ? radius : -radius) * 0.065
+				return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
 			return 0
 		})
 		.attr('dy', '.5em')
@@ -140,6 +129,29 @@ async function start() {
 				getAverageChildScores(d.data).toFixed(2)
 			)}%`
 		})
+
+	/**
+	 * Computes the text rotation angle for a node.
+	 * Text is flipped 180" if text is in 90-270* range
+	 * @param d node to get angle of
+	 */
+	function getTextRotation(d: any) {
+		var angle = ((d.x0 + d.x1) / Math.PI) * 90
+		return angle < 180 ? angle - 90 : angle + 90
+	}
+
+	/**
+	 * Returns the text anchor for a text element.
+	 * If the elements has children, return middle.
+	 * If not return start / end depending on the angle of the text.
+	 * Text from 90-270* range has anchone on end
+	 * @param d node to get text position on
+	 */
+	function getTextAnchor(d: any) {
+		if (d.children) return 'middle'
+		var angle = ((d.x0 + d.x1) / Math.PI) * 90
+		return angle < 180 ? 'start' : 'end'
+	}
 
 	/**
 	 * Returns the average score of all the children scores
