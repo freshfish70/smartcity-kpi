@@ -10,8 +10,8 @@ import { randomizeData } from '@helpers/randomizeData'
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
 
-	const width = window.innerWidth
-	const height = window.innerHeight
+	const width = window.innerWidth - 20
+	const height = window.innerHeight - 20
 	const radius = Math.min(width, height) / 3
 	randomizeData(nodeData)
 
@@ -20,6 +20,64 @@ async function start() {
 		.attr('width', width)
 		.attr('height', height)
 		.style('font', '12px sans-serif')
+	const tooltipGroup = svg
+		.append('g')
+		.attr('transform', `translate(${width - 420},40)`)
+
+	tooltipGroup
+		.append('rect')
+		.attr('width', 380)
+		.attr('height', 220)
+		.attr('fill', '#36435d')
+		.attr('rx', 10)
+
+	let tooltip = [
+		{
+			name: '95+ % of Target',
+			value: 96,
+		},
+		{
+			name: '66-95 % of Target',
+			value: 66,
+		},
+		{
+			name: '33-66 % of Target',
+			value: 33,
+		},
+		{
+			name: 'Less than 33 % of Target',
+			value: 32,
+		},
+		{
+			name: 'No Data or No Target',
+			value: TargetAvailable.NO_TARGET,
+		},
+		{
+			name: 'Data Reported - No targets yet available',
+			value: TargetAvailable.DATA_REPORTED,
+		},
+	]
+	for (let index = 0; index < tooltip.length; index++) {
+		const value = tooltip[index].value
+		const y = (index + 1) * 32
+		tooltipGroup
+			.append('text')
+			.attr('dy', y)
+			.attr('dx', 40)
+			.style('font', '20px')
+			.text(tooltip[index].name)
+			.attr('fill', '#fff')
+
+		tooltipGroup
+			.append('circle')
+			.attr(
+				'fill',
+				value > 2 ? colorScaleForValues(value) : colorScaleForNoValues(value)
+			)
+			.attr('r', 10)
+			.attr('cy', y - 5)
+			.attr('cx', 20)
+	}
 
 	const sunburstGroup = svg
 		.append('g')
