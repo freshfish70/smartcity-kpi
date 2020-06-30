@@ -21,7 +21,7 @@ async function start() {
 		.attr('height', height)
 		.style('font', '12px sans-serif')
 
-	const g = svg
+	const sunburstGroup = svg
 		.append('g')
 		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')') // <-- 4
 
@@ -33,7 +33,6 @@ async function start() {
 
 	const partition = d3.partition().size([2 * Math.PI, radius])
 	partition(root)
-	var e = root.copy()
 
 	function nullifyNoDataFields(
 		data: SmartCityPerformance,
@@ -70,7 +69,8 @@ async function start() {
 			return d.y1
 		})
 
-	g.selectAll('g')
+	sunburstGroup
+		.selectAll('g')
 		.data(root.descendants())
 		.enter()
 		.append('g')
@@ -94,7 +94,7 @@ async function start() {
 			) as any
 		})
 
-	svg
+	sunburstGroup
 		.selectAll('.node')
 		.attr('text-anchor', function (d: any) {
 			return getTextAnchor(d)
@@ -113,7 +113,7 @@ async function start() {
 			return d.parent ? d.data.name : ''
 		})
 
-	svg
+	sunburstGroup
 		.selectAll('.node')
 		.append('title')
 		.text((d: any) => {
