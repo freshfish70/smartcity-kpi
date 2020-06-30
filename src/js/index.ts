@@ -12,8 +12,7 @@ async function start() {
 
 	const width = window.innerWidth
 	const height = window.innerHeight
-	const radius = Math.min(width, height) / 2.5
-
+	const radius = Math.min(width, height) / 3
 	randomizeData(nodeData)
 
 	const svg = d3
@@ -117,7 +116,11 @@ async function start() {
 		.attr('transform', function (d: any) {
 			return `translate(${arc.centroid(d)})rotate(${computeTextRotation(d)})`
 		})
-		.attr('dx', '0')
+		.attr('dx', (d: any) => {
+			if (!d.children)
+				return (computeTextRotation(d) < 180 ? radius : -radius) * 0.065
+			return 0
+		})
 		.attr('dy', '.5em')
 		.text((d: any) => {
 			return d.parent ? d.data.name : ''
