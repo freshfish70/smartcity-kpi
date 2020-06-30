@@ -62,8 +62,6 @@ async function start() {
 		.endAngle(function (d: any) {
 			return d.x1
 		})
-		// .padAngle((d: any) => Math.min((d.x1 - d.x0) / 2, 0.005))
-		// .padRadius(radius * 1.5)
 		.innerRadius(function (d: any) {
 			return d.y0
 		})
