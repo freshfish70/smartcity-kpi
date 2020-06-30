@@ -10,9 +10,9 @@ import { randomizeData } from '@helpers/randomizeData'
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
 
-	const width = 900
-	const height = 900
-	const radius = Math.min(width - 200, height) / 2
+	const width = window.innerWidth
+	const height = window.innerHeight
+	const radius = Math.min(width, height) / 2.5
 
 	randomizeData(nodeData)
 
