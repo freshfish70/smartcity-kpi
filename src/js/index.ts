@@ -69,6 +69,7 @@ async function start() {
 			return d.y0
 		})
 		.outerRadius(function (d: any) {
+			if (!d.children) return d.y1 * 0.825
 			return d.y1
 		})
 
