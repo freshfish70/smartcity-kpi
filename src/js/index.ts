@@ -1,6 +1,11 @@
 import * as d3 from 'd3'
 
 import { colorScaleForNoValues, colorScaleForValues } from '@helpers/Colors'
+import {
+	SmartCityPerformance,
+	TargetAvailable,
+} from '@lib/SmartCityPerformance'
+import { randomizeData } from '@helpers/randomizeData'
 
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
@@ -9,41 +14,7 @@ async function start() {
 	const height = 900
 	const radius = Math.min(width - 200, height) / 2
 
-	function fuzy(data: any, nodata: number = 0) {
-		let noData = Math.random()
-		let noTarget = Math.random()
-		if (data.children) {
-			if ((noData < 0.1 || noTarget < 0.1) && nodata == 0) {
-				if (noData < noTarget) {
-					nodata = -1
-					data.noData = true
-				} else {
-					nodata = 1
-					data.noTarget = true
-				}
-			}
-			for (const iterator of data.children) {
-				fuzy(iterator, nodata)
-			}
-		} else if (data.value) {
-			if ((noData < 0.1 || noTarget < 0.1) && nodata == 0) {
-				if (noData < noTarget) {
-					data.noData = true
-				} else {
-					data.noTarget = true
-				}
-				data.value = 20
-			} else if (nodata != 0) {
-				data.value = 20
-				if (nodata < 0) data.noData = true
-				if (nodata > 0) data.noTarget = true
-			} else {
-				let rnd = Number.parseInt((Math.random() * 100).toFixed(0))
-				data.value = rnd
-			}
-		}
-	}
-	fuzy(nodeData, 0)
+	randomizeData(nodeData)
 
 	const svg = d3
 		.select('svg') // Selects an element; SVG element
@@ -55,34 +26,34 @@ async function start() {
 		.append('g')
 		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')') // <-- 4
 
-	const root = d3.hierarchy(nodeData).sum(function (d: any) {
-		return d.value
-	})
+	const root = d3
+		.hierarchy<SmartCityPerformance>(nodeData)
+		.sum(function (d: SmartCityPerformance) {
+			return d.score ? 20 : 0
+		})
+
 	const partition = d3.partition().size([2 * Math.PI, radius])
 	partition(root)
+	var e = root.copy()
 
-	console.log(root)
-
-	function nullifyNoDataFields(data: any) {
-		if (data.children) {
-			if (data.data.noData || data.data.noTarget) {
-				data.value = 0
-			}
-			for (const iterator of data.children) {
-				let val = nullifyNoDataFields(iterator)
-				if (data.value > 0) {
-					data.value -= val
-				}
-			}
-		} else if (data.value && (data.data.noData || data.data.noTarget)) {
-			let oldval = data.value
-			data.value = 0
-			return oldval
+	function nullifyNoDataFields(
+		data: SmartCityPerformance,
+		targetAvailable: TargetAvailable = TargetAvailable.AVAILABLE
+	) {
+		if (data.targetAvailable != TargetAvailable.AVAILABLE) {
+			targetAvailable = data.targetAvailable
+		} else if (targetAvailable != TargetAvailable.AVAILABLE) {
+			data.targetAvailable = targetAvailable
 		}
-		return 0
+
+		if (data.children) {
+			for (const childNode of data.children) {
+				nullifyNoDataFields(childNode, targetAvailable)
+			}
+		}
 	}
 
-	nullifyNoDataFields(root)
+	nullifyNoDataFields(root.data)
 
 	var arc = d3
 		.arc()
@@ -113,19 +84,16 @@ async function start() {
 		.attr('d', arc as any)
 		.style('stroke', '#fff')
 		.attr('fill', (d: any) => {
-			var dataCountCopy = d.copy().count()
-			let parentNoData = d?.parent?.data?.noData
-			let parentNoTarget = d?.parent?.data?.noTarget
+			if (
+				d.data.targetAvailable == TargetAvailable.NO_TARGET ||
+				d.data.targetAvailable == TargetAvailable.DATA_REPORTED
+			) {
+				return colorScaleForNoValues(d.data.targetAvailable)
+			}
 
-			if (d.data.noData || parentNoData) {
-				return colorScaleForNoValues(1)
-			} else if (d.data.noTarget || parentNoTarget) {
-				return colorScaleForNoValues(-1)
-			}
-			if (dataCountCopy.value > 1) {
-				return colorScaleForValues(d.value / dataCountCopy.value) as any
-			}
-			return colorScaleForValues(d.value) as any
+			return colorScaleForValues(
+				Number.parseFloat(getAverageChildScores(d.data).toFixed(2))
+			) as any
 		})
 
 	function computeTextRotation(d: any) {
@@ -160,10 +128,46 @@ async function start() {
 		.text((d: any) => {
 			return `${d
 				.ancestors()
-				.map((d: any) => d.data.name)
+				.map((d: any) => {
+					return d.data.name
+				})
 				.reverse()
-				.join('/')}\n${d.value}`
+				.join('/')}\n${Number.parseFloat(
+				getAverageChildScores(d.data).toFixed(2)
+			)}%`
 		})
+
+	/**
+	 * Returns the average score of all the children scores
+	 * @param node the node to get children scores of
+	 */
+	function getAverageChildScores(node: SmartCityPerformance): number {
+		let score = 0
+		if (node.targetAvailable == TargetAvailable.AVAILABLE && node.score) {
+			score += node.score
+		}
+		if (node.children) {
+			for (const child of node.children) {
+				score += getAverageChildScores(child) / node.children.length
+			}
+		}
+		return score
+	}
+
+	/**
+	 * Returns the sum of all the children a node has
+	 * @param node the node to get child count of
+	 */
+	function countAllChildren(node: SmartCityPerformance): number {
+		let sum = 0
+		if (node.children) {
+			sum += node.children.length
+			for (const child of node.children) {
+				sum += countAllChildren(child)
+			}
+		}
+		return sum
+	}
 }
 
 start()
