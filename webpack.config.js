@@ -15,8 +15,8 @@ module.exports = {
 	resolve: {
 		extensions: ['.tsx', '.ts', '.js'],
 		alias: {
-			'@lib': path.resolve(__dirname, 'src/js/helpers'),
-			'@config': path.resolve(__dirname, 'src/js/helpers'),
+			'@lib': path.resolve(__dirname, 'src/js/lib'),
+			'@config': path.resolve(__dirname, 'src/js/configs'),
 			'@helpers': path.resolve(__dirname, 'src/js/helpers'),
 		},
 	},
@@ -25,7 +25,7 @@ module.exports = {
 		path: path.resolve(__dirname, 'dist'),
 	},
 	devServer: {
-		contentBase: path.join(__dirname, 'dist'),
+		contentBase: [path.join(__dirname, 'public'), path.join(__dirname, 'dist')],
 		compress: true,
 		hot: true,
 		port: 9000,
