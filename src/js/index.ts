@@ -6,6 +6,8 @@ import {
 	TargetAvailable,
 } from '@lib/SmartCityPerformance'
 import { randomizeData } from '@helpers/randomizeData'
+import { style } from 'd3'
+import { Legend, LegendConfig } from '@lib/Legend'
 
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
@@ -20,64 +22,58 @@ async function start() {
 		.attr('width', width)
 		.attr('height', height)
 		.style('font', '10px sans-serif')
-	const tooltipGroup = svg
-		.append('g')
-		.attr('transform', `translate(${width - 420},40)`)
 
-	tooltipGroup
-		.append('rect')
-		.attr('width', 380)
-		.attr('height', 220)
-		.attr('fill', '#36435d')
-		.attr('rx', 10)
+	const tooltipGroup = svg.append<SVGGElement>('g')
 
 	let tooltip = [
 		{
 			name: '95+ % of Target',
-			value: 96,
+			score: 96,
+			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '66-95 % of Target',
-			value: 66,
+			score: 66,
+			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '33-66 % of Target',
-			value: 33,
+			score: 33,
+			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: 'Less than 33 % of Target',
-			value: 32,
+			score: 32,
+			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: 'No Data or No Target',
-			value: TargetAvailable.NO_TARGET,
+			score: 0,
+			targetAvailable: TargetAvailable.NO_TARGET,
 		},
 		{
 			name: 'Data Reported - No targets yet available',
-			value: TargetAvailable.DATA_REPORTED,
+			score: 0,
+			targetAvailable: TargetAvailable.DATA_REPORTED,
 		},
 	]
-	for (let index = 0; index < tooltip.length; index++) {
-		const value = tooltip[index].value
-		const y = (index + 1) * 32
-		tooltipGroup
-			.append('text')
-			.attr('dy', y)
-			.attr('dx', 40)
-			.style('font', '20px')
-			.text(tooltip[index].name)
-			.attr('fill', '#fff')
 
-		tooltipGroup
-			.append('circle')
-			.attr(
-				'fill',
-				value > 2 ? colorScaleForValues(value) : colorScaleForNoValues(value)
-			)
-			.attr('r', 10)
-			.attr('cy', y - 5)
-			.attr('cx', 20)
-	}
+	let selectedScoreValue: number = -1
+
+	tooltipGroup.call(Legend, {
+		x: width - 420,
+		y: 40,
+		items: tooltip,
+		hoverCallback: (d) => {
+			console.log(d.targetAvailable)
+			console.log(d.targetAvailable == TargetAvailable.AVAILABLE)
+
+			if (d.targetAvailable || d.targetAvailable == TargetAvailable.AVAILABLE) {
+				selectedScoreValue = d.score
+			}
+			render()
+		},
+	} as LegendConfig)
 
 	const sunburstGroup = svg
 		.append('g')
@@ -110,81 +106,102 @@ async function start() {
 	}
 
 	nullifyNoDataFields(root.data)
+	render()
 
-	var arc = d3
-		.arc()
-		.startAngle(function (d: any) {
-			return d.x0
-		})
-		.endAngle(function (d: any) {
-			return d.x1
-		})
-		.innerRadius(function (d: any) {
-			return d.y0
-		})
-		.outerRadius(function (d: any) {
-			if (!d.children) return d.y1 * 0.825
-			return d.y1
-		})
+	function render() {
+		var arc = d3
+			.arc()
+			.startAngle(function (d: any) {
+				return d.x0
+			})
+			.endAngle(function (d: any) {
+				return d.x1
+			})
+			.innerRadius(function (d: any) {
+				return d.y0
+			})
+			.outerRadius(function (d: any) {
+				if (!d.children) return d.y1 * 0.825
+				return d.y1
+			})
 
-	sunburstGroup
-		.selectAll('g')
-		.data(root.descendants())
-		.enter()
-		.append('g')
-		.attr('class', 'node')
-		.append('path')
-		.attr('display', function (d) {
-			return d.depth ? null : 'none'
-		})
-		.attr('d', arc as any)
-		.style('stroke', '#fff')
-		.attr('fill', (d: any) => {
-			if (
-				d.data.targetAvailable == TargetAvailable.NO_TARGET ||
-				d.data.targetAvailable == TargetAvailable.DATA_REPORTED
-			) {
-				return colorScaleForNoValues(d.data.targetAvailable)
-			}
+		sunburstGroup
+			.selectAll('g')
+			.data(root.descendants())
+			.join(
+				function (enter) {
+					return enter
+						.append('g')
+						.attr('class', 'node')
+						.append('path')
+						.attr('display', function (d) {
+							return d.depth ? null : 'none'
+						})
+						.attr('d', arc as any)
+						.style('stroke', '#fff')
+						.attr('fill', (d: any) => {
+							if (
+								d.data.targetAvailable == TargetAvailable.NO_TARGET ||
+								d.data.targetAvailable == TargetAvailable.DATA_REPORTED
+							) {
+								return colorScaleForNoValues(d.data.targetAvailable)
+							}
 
-			return colorScaleForValues(
-				Number.parseFloat(getAverageChildScores(d.data).toFixed(2))
-			) as any
-		})
+							return colorScaleForValues(
+								Number.parseFloat(getAverageChildScores(d.data).toFixed(2))
+							) as any
+						})
+				},
+				(update) =>
+					update.attr('opacity', (d: any) => {
+						if (selectedScoreValue < 0) return 1
 
-	sunburstGroup
-		.selectAll('.node')
-		.attr('text-anchor', function (d: any) {
-			return getTextAnchor(d)
-		})
-		.append('text')
-		.attr('transform', function (d: any) {
-			return `translate(${arc.centroid(d)})rotate(${getTextRotation(d)})`
-		})
-		.attr('dx', (d: any) => {
-			if (!d.children)
-				return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
-			return 0
-		})
-		.attr('dy', '.5em')
-		.text((d: any) => {
-			return d.parent ? d.data.name : ''
-		})
+						if (d.data.targetAvailable == TargetAvailable.AVAILABLE) {
+							let score = Number.parseFloat(
+								getAverageChildScores(d.data).toFixed(2)
+							)
 
-	sunburstGroup
-		.selectAll('.node')
-		.append('title')
-		.text((d: any) => {
-			return `${d
-				.ancestors()
-				.map((d: any) => {
-					return d.data.name
-				})
-				.reverse()
-				.join('/')}\n${Number.parseFloat(
-				getAverageChildScores(d.data).toFixed(2)
-			)}%`
-		})
+							if (score > selectedScoreValue) return 1
+						}
+
+						return 0.2
+					})
+			)
+
+		sunburstGroup
+			.selectAll('.node')
+			.attr('text-anchor', function (d: any) {
+				return getTextAnchor(d)
+			})
+			.append('text')
+			.attr('transform', function (d: any) {
+				return `translate(${arc.centroid(d)})rotate(${getTextRotation(d)})`
+			})
+			.attr('dx', (d: any) => {
+				if (!d.children)
+					return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
+				return 0
+			})
+			.attr('dy', '.5em')
+			.text((d: any) => {
+				return d.parent ? d.data.name : ''
+			})
+
+		sunburstGroup
+			.selectAll('.node')
+			.append('title')
+			.text((d: any) => {
+				return `${d
+					.ancestors()
+					.map((d: any) => {
+						return d.data.name
+					})
+					.reverse()
+					.join('/')}\n${Number.parseFloat(
+					getAverageChildScores(d.data).toFixed(2)
+				)}%`
+			})
+	}
 
 	/**
 	 * Computes the text rotation angle for a node.
