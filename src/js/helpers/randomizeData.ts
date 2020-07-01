@@ -14,7 +14,7 @@ export const randomizeData = (
 		let dataReported = Math.random()
 		if (data.children) {
 			if (
-				(noTarget < 0.1 || dataReported < 0.1) &&
+				(noTarget < 0.03 || dataReported < 0.03) &&
 				dataVailableForNode == TargetAvailable.AVAILABLE
 			) {
 				if (noTarget < dataReported) {
@@ -42,10 +42,10 @@ export const randomizeData = (
 			} else if (dataVailableForNode != 0) {
 				data.targetAvailable = dataVailableForNode
 			}
-			data.score = Number.parseInt((Math.random() * 100).toFixed(0))
+			let rnd = Math.random() * 100
+			data.score = Number.parseInt(Math.min(100, Math.max(0, rnd)).toFixed(0))
 		}
 	}
 	randomize(data)
-
 	return data
 }
