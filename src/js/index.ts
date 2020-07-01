@@ -19,7 +19,7 @@ async function start() {
 		.select('svg') // Selects an element; SVG element
 		.attr('width', width)
 		.attr('height', height)
-		.style('font', '12px sans-serif')
+		.style('font', '10px sans-serif')
 	const tooltipGroup = svg
 		.append('g')
 		.attr('transform', `translate(${width - 420},40)`)
