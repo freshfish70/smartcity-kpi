@@ -106,6 +106,11 @@ async function start() {
 	const partition = d3.partition().size([2 * Math.PI, radius])
 
 	partition(root)
+	sunburstGroup
+		.append('text')
+		.attr('text-anchor', 'middle')
+		.style('font', 'bold 16px sans-serif')
+		.text(root.ancestors()[0].data.name)
 
 	var arc = d3
 		.arc()
