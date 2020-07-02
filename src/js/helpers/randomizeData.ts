@@ -2,6 +2,7 @@ import {
 	SmartCityPerformance,
 	TargetAvailable,
 } from '@lib/SmartCityPerformance'
+import { getAverageChildScores } from './averageScoreOfChildren'
 
 export const randomizeData = (
 	data: SmartCityPerformance
@@ -29,9 +30,10 @@ export const randomizeData = (
 			for (const iterator of data.children) {
 				randomize(iterator, dataVailableForNode)
 			}
+			data.score = getAverageChildScores(data)
 		} else if (data.score) {
 			if (
-				(noTarget < 0.1 || dataReported < 0.1) &&
+				(noTarget < 0.03 || dataReported < 0.03) &&
 				dataVailableForNode == TargetAvailable.AVAILABLE
 			) {
 				if (noTarget < dataReported) {
@@ -39,6 +41,7 @@ export const randomizeData = (
 				} else {
 					data.targetAvailable = TargetAvailable.DATA_REPORTED
 				}
+				data.score = -1
 			} else if (dataVailableForNode != 0) {
 				data.targetAvailable = dataVailableForNode
 			}
