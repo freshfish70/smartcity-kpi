@@ -6,6 +6,7 @@
       "targetAvailable": 0,
       "children": [{
           "name": "education",
+          "targetAvailable": 0,
           "children": [{
               "name": "students ict access",
               "score": 10,
@@ -189,6 +190,8 @@
       "targetAvailable": 0,
       "children": [{
           "name": "ict infrastructure",
+          "targetAvailable": 0,
+
           "children": [{
               "name": "household internet access",
               "score": 10,
@@ -501,6 +504,7 @@
       "targetAvailable": 0,
       "children": [{
           "name": "air quality",
+          "targetAvailable": 0,
           "children": [{
               "name": "air pollution PM2.5",
               "score": 10,
