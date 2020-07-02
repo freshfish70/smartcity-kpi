@@ -20,7 +20,7 @@ async function start() {
 		.select('svg') // Selects an element; SVG element
 		.attr('width', width)
 		.attr('height', height)
-		.style('font', '10px sans-serif')
+		.style('font', '.8rem arial')
 
 	const tooltipGroup = svg.append<SVGGElement>('g')
 
@@ -105,10 +105,11 @@ async function start() {
 	const partition = d3.partition().size([2 * Math.PI, radius])
 
 	partition(root)
+
 	sunburstGroup
 		.append('text')
 		.attr('text-anchor', 'middle')
-		.style('font', 'bold 16px sans-serif')
+		.style('font', 'bold 1.2rem arial')
 		.text(root.ancestors()[0].data.name)
 
 	var arc = d3
@@ -120,10 +121,14 @@ async function start() {
 			return d.x1
 		})
 		.innerRadius(function (d: any) {
+			if (!d.children) return d.y0 * 1.1
+			if (d.ancestors().length == 3) return d.y0 * 0.8
 			return d.y0
 		})
 		.outerRadius(function (d: any) {
-			if (!d.children) return d.y1 * 0.825
+			if (!d.children) return d.y1 * 0.9
+			if (d.ancestors().length == 2) return d.y1 * 0.8
+			if (d.ancestors().length == 3) return d.y1 * 1.1
 			return d.y1
 		})
 
@@ -223,6 +228,11 @@ async function start() {
 			.text((d: any) => {
 				return d.parent ? d.data.name : ''
 			})
+			.style('fill', (d: any) => {
+				// if (d.ancestors().length > 3) return 'none'
+				return 'white'
+			})
+			.style('font', 'bold .6rem arial')
 
 		sunburstGroup
 			.selectAll('.node')
@@ -249,6 +259,9 @@ async function start() {
 	 */
 	function getTextRotation(d: any) {
 		var angle = ((d.x0 + d.x1) / Math.PI) * 90
+		if (d.ancestors().length == 2) {
+			return angle < 90 || angle > 270 ? angle : angle + 180
+		}
 		return angle < 180 ? angle - 90 : angle + 90
 	}
 
