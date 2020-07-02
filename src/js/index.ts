@@ -82,7 +82,7 @@ async function start() {
 	const root = d3
 		.hierarchy<SmartCityPerformance>(nodeData)
 		.sum(function (d: SmartCityPerformance) {
-			return d.score ? 20 : 0
+			return d.children ? 0 : 20
 		})
 
 	const partition = d3.partition().size([2 * Math.PI, radius])
@@ -126,10 +126,7 @@ async function start() {
 							) {
 								return colorScaleForNoValues(d.data.targetAvailable)
 							}
-
-							return colorScaleForValues(
-								Number.parseFloat(getAverageChildScores(d.data).toFixed(2))
-							) as any
+							return colorScaleForValues(d.data.score) as any
 						})
 				},
 				(update) =>
@@ -177,9 +174,11 @@ async function start() {
 						return d.data.name
 					})
 					.reverse()
-					.join('/')}\n${Number.parseFloat(
-					getAverageChildScores(d.data).toFixed(2)
-				)}%`
+					.join('/')}\n${
+					d.data.targetAvailable == TargetAvailable.AVAILABLE
+						? d.data.score.toFixed(2)
+						: 0
+				}%`
 			})
 	}
 
@@ -204,23 +203,6 @@ async function start() {
 		if (d.children) return 'middle'
 		var angle = ((d.x0 + d.x1) / Math.PI) * 90
 		return angle < 180 ? 'start' : 'end'
-	}
-
-	/**
-	 * Returns the average score of all the children scores
-	 * @param node the node to get children scores of
-	 */
-	function getAverageChildScores(node: SmartCityPerformance): number {
-		let score = 0
-		if (node.targetAvailable == TargetAvailable.AVAILABLE && node.score) {
-			score += node.score
-		}
-		if (node.children) {
-			for (const child of node.children) {
-				score += getAverageChildScores(child) / node.children.length
-			}
-		}
-		return score
 	}
 
 	/**
