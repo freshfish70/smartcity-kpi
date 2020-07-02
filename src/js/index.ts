@@ -6,7 +6,6 @@ import {
 	TargetAvailable,
 } from '@lib/SmartCityPerformance'
 import { randomizeData } from '@helpers/randomizeData'
-import { style } from 'd3'
 import { Legend, LegendConfig } from '@lib/Legend'
 
 async function start() {
@@ -175,29 +174,33 @@ async function start() {
 							return colorScaleForValues(d.data.score) as any
 						})
 				},
-				(update) =>
-					update.attr('opacity', (d: any) => {
-						if (selectedScoreValue == null) return 1
-						if (
-							selectedScoreValue.target &&
-							d.data.targetAvailable == TargetAvailable.AVAILABLE
-						) {
-							for (const filter of filters) {
-								if (
-									selectedScoreValue.score >= filter.min &&
-									selectedScoreValue.score <= filter.max
-								) {
-									let score = d.data.score
-									if (score >= filter.min && score <= filter.max) return 1
+				function (update: any) {
+					return update
+						.transition()
+						.duration(150)
+						.attr('opacity', (d: any) => {
+							if (selectedScoreValue == null) return 1
+							if (
+								selectedScoreValue.target &&
+								d.data.targetAvailable == TargetAvailable.AVAILABLE
+							) {
+								for (const filter of filters) {
+									if (
+										selectedScoreValue.score >= filter.min &&
+										selectedScoreValue.score <= filter.max
+									) {
+										let score = d.data.score
+										if (score >= filter.min && score <= filter.max) return 1
+									}
+								}
+							} else {
+								if (selectedScoreValue.score == d.data.targetAvailable) {
+									return 1
 								}
 							}
-						} else {
-							if (selectedScoreValue.score == d.data.targetAvailable) {
-								return 1
-							}
-						}
-						return 0.2
-					})
+							return 0.2
+						})
+				}
 			)
 	}
 
