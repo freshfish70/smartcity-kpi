@@ -86,29 +86,9 @@ async function start() {
 		})
 
 	const partition = d3.partition().size([2 * Math.PI, radius])
+
 	partition(root)
 
-	function nullifyNoDataFields(
-		data: SmartCityPerformance,
-		targetAvailable: TargetAvailable = TargetAvailable.AVAILABLE
-	) {
-		if (data.targetAvailable != TargetAvailable.AVAILABLE) {
-			targetAvailable = data.targetAvailable
-		} else if (targetAvailable != TargetAvailable.AVAILABLE) {
-			data.targetAvailable = targetAvailable
-		}
-
-		if (data.children) {
-			for (const childNode of data.children) {
-				nullifyNoDataFields(childNode, targetAvailable)
-			}
-		}
-	}
-
-	nullifyNoDataFields(root.data)
-	render()
-
-	function render() {
 		var arc = d3
 			.arc()
 			.startAngle(function (d: any) {
