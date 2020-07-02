@@ -13,6 +13,7 @@ export interface LegendConfig {
 		targetAvailable: TargetAvailable
 	}>
 	hoverCallback?: (d: any) => void
+	hoverLeaveCallback?: (d: any) => void
 	clickCallback?: (d: any) => void
 }
 
@@ -25,6 +26,7 @@ export const Legend = (
 		height = 220,
 		width = 380,
 		hoverCallback,
+		hoverLeaveCallback,
 		clickCallback,
 	}: LegendConfig
 ) => {
@@ -42,20 +44,18 @@ export const Legend = (
 		.attr('fill', '#36435d')
 		.attr('rx', 10)
 
-	selection
-		.selectAll('text')
+	const group = selection
+		.selectAll('g')
 		.data((d: any) => d)
-		.join('text')
-		.text((d: any) => {
-			return d.name
-		})
-		.attr('dx', textX)
-		.attr('dy', (d: any, i) => {
-			return i * yOffsetfactor + yOffsetfactor
-		})
+		.join('g')
 		.on('mouseenter', (d) => {
 			if (hoverCallback) {
 				hoverCallback(d)
+			}
+		})
+		.on('mouseleave', (d) => {
+			if (hoverLeaveCallback) {
+				hoverLeaveCallback(d)
 			}
 		})
 		.on('click', (d) => {
@@ -63,14 +63,30 @@ export const Legend = (
 				clickCallback(d)
 			}
 		})
+		.attr('class', 'pointer')
 
-	selection
-		.selectAll('circle')
-		.data((d: any) => d)
-		.join('circle')
+	group
+		.append('rect')
+		.attr('fill', '#36435d')
+		.attr('width', width - 20)
+		.attr('height', 28)
+		.attr('x', 10)
+		.attr('y', (d: any, i) => {
+			return i * yOffsetfactor + yOffsetfactor / 2
+		})
+
+	group
+		.append('text')
 		.text((d: any) => {
 			return d.name
 		})
+		.attr('dx', textX)
+		.attr('dy', (d: any, i) => {
+			return i * yOffsetfactor + yOffsetfactor
+		})
+
+	group
+		.append('circle')
 		.attr('fill', (d: any) => {
 			return d.targetAvailable == TargetAvailable.AVAILABLE
 				? colorScaleForValues(d.score)

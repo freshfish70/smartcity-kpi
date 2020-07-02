@@ -28,17 +28,17 @@ async function start() {
 	let tooltip = [
 		{
 			name: '95+ % of Target',
-			score: 96,
+			score: 95.01,
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '66-95 % of Target',
-			score: 66,
+			score: 66.0,
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '33-66 % of Target',
-			score: 33,
+			score: 33.0,
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
@@ -58,20 +58,38 @@ async function start() {
 		},
 	]
 
-	let selectedScoreValue: number = -1
+	let selectedScoreValue: any = {
+		score: 0,
+		target: true,
+	}
 
 	tooltipGroup.call(Legend, {
 		x: width - 420,
 		y: 40,
 		items: tooltip,
 		hoverCallback: (d) => {
-			console.log(d.targetAvailable)
-			console.log(d.targetAvailable == TargetAvailable.AVAILABLE)
-
-			if (d.targetAvailable || d.targetAvailable == TargetAvailable.AVAILABLE) {
-				selectedScoreValue = d.score
+			if (d.targetAvailable == TargetAvailable.AVAILABLE) {
+				selectedScoreValue = {
+					score: d.score,
+					target: true,
+				}
+			} else {
+				selectedScoreValue = {
+					score: d.targetAvailable,
+					target: false,
+				}
+				{
+					selectedScoreValue.target = false
+					selectedScoreValue.score = d.targetAvailable
+				}
 			}
 			render()
+		},
+		hoverLeaveCallback: (d) => {
+			selectedScoreValue = null
+			setTimeout(() => {
+				if (!selectedScoreValue) render()
+			}, 250)
 		},
 	} as LegendConfig)
 
@@ -89,22 +107,45 @@ async function start() {
 
 	partition(root)
 
-		var arc = d3
-			.arc()
-			.startAngle(function (d: any) {
-				return d.x0
-			})
-			.endAngle(function (d: any) {
-				return d.x1
-			})
-			.innerRadius(function (d: any) {
-				return d.y0
-			})
-			.outerRadius(function (d: any) {
-				if (!d.children) return d.y1 * 0.825
-				return d.y1
-			})
+	var arc = d3
+		.arc()
+		.startAngle(function (d: any) {
+			return d.x0
+		})
+		.endAngle(function (d: any) {
+			return d.x1
+		})
+		.innerRadius(function (d: any) {
+			return d.y0
+		})
+		.outerRadius(function (d: any) {
+			if (!d.children) return d.y1 * 0.825
+			return d.y1
+		})
 
+	render()
+	createText()
+
+	let filters = [
+		{
+			max: 100,
+			min: 95.01,
+		},
+		{
+			max: 95,
+			min: 66.0,
+		},
+		{
+			max: 65.99,
+			min: 33.0,
+		},
+		{
+			max: 32.99,
+			min: 0,
+		},
+	]
+
+	function render() {
 		sunburstGroup
 			.selectAll('g')
 			.data(root.descendants())
@@ -131,20 +172,31 @@ async function start() {
 				},
 				(update) =>
 					update.attr('opacity', (d: any) => {
-						if (selectedScoreValue < 0) return 1
-
-						if (d.data.targetAvailable == TargetAvailable.AVAILABLE) {
-							let score = Number.parseFloat(
-								getAverageChildScores(d.data).toFixed(2)
-							)
-
-							if (score > selectedScoreValue) return 1
+						if (selectedScoreValue == null) return 1
+						if (
+							selectedScoreValue.target &&
+							d.data.targetAvailable == TargetAvailable.AVAILABLE
+						) {
+							for (const filter of filters) {
+								if (
+									selectedScoreValue.score >= filter.min &&
+									selectedScoreValue.score <= filter.max
+								) {
+									let score = d.data.score
+									if (score >= filter.min && score <= filter.max) return 1
+								}
+							}
+						} else {
+							if (selectedScoreValue.score == d.data.targetAvailable) {
+								return 1
+							}
 						}
-
 						return 0.2
 					})
 			)
+	}
 
+	function createText() {
 		sunburstGroup
 			.selectAll('.node')
 			.attr('text-anchor', function (d: any) {
