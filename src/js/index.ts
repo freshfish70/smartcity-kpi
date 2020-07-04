@@ -39,19 +39,7 @@ async function start() {
 		.style('font', '.8rem arial')
 
 	const tooltipGroup = svg.append<SVGGElement>('g')
-
 	let selectedScoreValue: string | null = null
-
-	tooltipGroup.call(Legend, {
-		x: width - 420,
-		y: 40,
-		items: tooltip,
-		clickCallback: (d) => {
-			if (d.colorValue === selectedScoreValue) selectedScoreValue = null
-			else selectedScoreValue = d.colorValue
-			render()
-		},
-	} as LegendConfig)
 
 	const sunburstGroup = svg
 		.append('g')
@@ -146,6 +134,18 @@ async function start() {
 						})
 				}
 			)
+
+		tooltipGroup.call(Legend, {
+			x: width - 420,
+			y: 40,
+			items: tooltip,
+			selectedScoreValue: selectedScoreValue,
+			clickCallback: (d) => {
+				if (d.colorValue === selectedScoreValue) selectedScoreValue = null
+				else selectedScoreValue = d.colorValue
+				render()
+			},
+		} as LegendConfig)
 	}
 
 	function createText() {
