@@ -28,7 +28,7 @@ async function start() {
 			})
 	})
 
-	const width = window.innerWidth
+	const width = window.innerWidth - 310
 	const height = window.innerHeight
 	const radius = Math.min(width, height) / 3
 	randomizeData(nodeData)
@@ -39,10 +39,11 @@ async function start() {
 		.attr('width', width)
 		.attr('height', height)
 
-	const legend = d3
-		.select('body')
-		.append<HTMLElement>('ul')
+	const sidebar = d3.select('#sunburst-sidebar')
+	const legend = sidebar
+		.insert<HTMLElement>('ul', ':first-child')
 		.attr('class', 'legend')
+
 	let selectedScoreValue: string | null = null
 
 	const sunburstGroup = svg
@@ -56,6 +57,14 @@ async function start() {
 		})
 
 	const partition = d3.partition().size([2 * Math.PI, radius])
+
+	sidebar
+		.insert('h3', ':first-child')
+		.text(root.ancestors()[0].data.name + ' KPI')
+	sidebar
+		.insert('span', '.legend')
+		.text('Click a label for filtering')
+		.attr('class', 'is-italic')
 
 	partition(root)
 

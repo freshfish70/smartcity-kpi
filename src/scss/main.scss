@@ -4,6 +4,7 @@ body {
 	padding: 0;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 300;
+	overflow-x: hidden;
 }
 
 body {
@@ -85,10 +86,28 @@ input:checked+.slider:before {
 }
 
 /***********************
+   SIDEBAR
+***********************/
+.sidebar {
+	list-style-type: none;
+	background: #2b3548;
+	padding: .5rem 1rem;
+	border-radius: .5rem;
+	position: fixed;
+	top: 0;
+	right: 0;
+	margin: 1rem .5rem;
+	height: calc(100vh - 3rem);
+	min-width: 250px;
+}
+
+/***********************
    LEGEND
 ***********************/
 .legend {
 	list-style-type: none;
+	margin: 0;
+	padding: 0;
 
 	.legend-item {
 		margin: .5rem 0;
@@ -107,6 +126,16 @@ input:checked+.slider:before {
 		margin: 0 0.5rem -4px 0;
 	}
 }
+
+/***********************
+   HELPERS
+***********************/
+
+.is-italic {
+	font-style: italic;
+}
+
+
 
 @media only screen and (max-width: 1200px) {
 
