@@ -25,7 +25,7 @@ async function createSunBurst(config: SunburstConfig) {
 	var nodeData: any = await d3.json('public/alesundkpi.json')
 	randomizeData(nodeData)
 
-	var toggle = document.getElementById('toggle')
+	var toggle = document.getElementById('label-toggler')
 	toggle?.addEventListener('change', (e) => {
 		const element = e.target as HTMLInputElement
 		sunburstGroup
