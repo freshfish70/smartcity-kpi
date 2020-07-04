@@ -14,7 +14,7 @@ export interface LegendConfig {
 }
 
 export const Legend = (
-	selection: Selection<SVGGElement, unknown, HTMLElement, any>,
+	selection: Selection<HTMLElement, unknown, Element, any>,
 	{
 		x = 0,
 		y = 0,
@@ -27,31 +27,15 @@ export const Legend = (
 		clickCallback,
 	}: LegendConfig
 ) => {
-	const yOffsetfactor = 32
-	const textX = 40
-	const colorIndicatorRadius = 10
-	const cx = 20
-
-	selection.attr('transform', `translate(${x},${y})`)
-
-	var bg = selection
-		.selectAll('rect')
-		.data([null])
-		.join('rect')
-		.attr('width', width)
-		.attr('height', height)
-		.attr('fill', '#36435d')
-		.attr('rx', 10)
-
 	selection.datum(items)
 
 	const group = selection
-		.selectAll('g')
+		.selectAll('li')
 		.data((d: any) => d)
 		.join(
 			(enter) => {
 				let group = enter
-					.append('g')
+					.append('li')
 					.on('mouseenter', (d) => {
 						if (hoverCallback) {
 							hoverCallback(d)
@@ -67,39 +51,21 @@ export const Legend = (
 							clickCallback(d)
 						}
 					})
-					.attr('class', 'pointer')
-				group
-					.append('rect')
-					.attr('fill', '#36435d')
-					.attr('width', width - 20)
-					.attr('height', 28)
-					.attr('x', 10)
-					.attr('y', (d: any, i) => {
-						return i * yOffsetfactor + yOffsetfactor / 2
-					})
+					.attr('class', 'pointer legend-item')
 
 				group
-					.append('text')
-					.text((d: any) => {
-						return d.name
-					})
-					.attr('dx', textX)
-					.attr('dy', (d: any, i) => {
-						return i * yOffsetfactor + yOffsetfactor
-					})
+					.append('div')
+					.style('background', (d: any) => d.colorValue)
+					.attr('class', 'legend-bullet')
 
-				group
-					.append('circle')
-					.attr('fill', (d: any) => d.colorValue)
-					.attr('r', colorIndicatorRadius)
-					.attr('cy', (d: any, i) => {
-						return i * yOffsetfactor + yOffsetfactor - colorIndicatorRadius / 2
-					})
-					.attr('cx', cx)
+				group.append('span').text((d: any) => {
+					return d.name
+				})
+
 				return group
 			},
 			(update) => {
-				update.selectAll('g *').style('opacity', (d: any) => {
+				update.selectAll('*').style('opacity', (d: any) => {
 					if (selectedScoreValue == d.colorValue) return 1
 					if (selectedScoreValue == null) return 1
 					return 0.25

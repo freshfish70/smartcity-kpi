@@ -1,3 +1,4 @@
+import '../scss/main.scss'
 import * as d3 from 'd3'
 
 import { colorScaleForNoValues, colorScaleForValues } from '@helpers/Colors'
@@ -37,9 +38,11 @@ async function start() {
 		.append('svg')
 		.attr('width', width)
 		.attr('height', height)
-		.style('font', '.8rem arial')
 
-	const tooltipGroup = svg.append<SVGGElement>('g')
+	const legend = d3
+		.select('body')
+		.append<HTMLElement>('ul')
+		.attr('class', 'legend')
 	let selectedScoreValue: string | null = null
 
 	const sunburstGroup = svg
@@ -59,7 +62,7 @@ async function start() {
 	sunburstGroup
 		.append('text')
 		.attr('text-anchor', 'middle')
-		.style('font', 'bold 1.2rem arial')
+		.style('font', 'bold 1.2rem Arial')
 		.text(root.ancestors()[0].data.name)
 
 	var arc = d3
@@ -136,7 +139,7 @@ async function start() {
 				}
 			)
 
-		tooltipGroup.call(Legend, {
+		legend.call(Legend, {
 			x: width - 420,
 			y: 40,
 			items: tooltip,
