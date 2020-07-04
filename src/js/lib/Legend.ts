@@ -1,17 +1,12 @@
 import { Selection } from 'd3'
-import { TargetAvailable } from './SmartCityPerformance'
-import { colorScaleForValues, colorScaleForNoValues } from '@helpers/Colors'
+import { Tooltip } from './Tootip'
 
 export interface LegendConfig {
 	x: number
 	y: number
 	height: number
 	width: number
-	items: Array<{
-		name: string
-		colorValue: string
-		targetAvailable: TargetAvailable
-	}>
+	items: Array<Tooltip>
 	hoverCallback?: (d: any) => void
 	hoverLeaveCallback?: (d: any) => void
 	clickCallback?: (d: any) => void
