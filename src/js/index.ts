@@ -33,7 +33,8 @@ async function start() {
 	randomizeData(nodeData)
 
 	const svg = d3
-		.select('svg') // Selects an element; SVG element
+		.select('body')
+		.append('svg')
 		.attr('width', width)
 		.attr('height', height)
 		.style('font', '.8rem arial')
