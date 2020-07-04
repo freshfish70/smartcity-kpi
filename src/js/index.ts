@@ -46,15 +46,10 @@ async function start() {
 		x: width - 420,
 		y: 40,
 		items: tooltip,
-		hoverCallback: (d) => {
-			selectedScoreValue = d.colorValue
+		clickCallback: (d) => {
+			if (d.colorValue === selectedScoreValue) selectedScoreValue = null
+			else selectedScoreValue = d.colorValue
 			render()
-		},
-		hoverLeaveCallback: (d) => {
-			selectedScoreValue = null
-			setTimeout(() => {
-				if (!selectedScoreValue) render()
-			}, 250)
 		},
 	} as LegendConfig)
 
