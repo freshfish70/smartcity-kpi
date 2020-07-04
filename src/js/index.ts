@@ -11,8 +11,21 @@ import { Legend, LegendConfig } from '@lib/Legend'
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
 
-	const width = window.innerWidth - 20
-	const height = window.innerHeight - 20
+	var toggle = document.getElementById('toggle')
+	toggle?.addEventListener('change', (e) => {
+		const element = e.target as HTMLInputElement
+		sunburstGroup
+			.selectAll('.node-label')
+			.transition()
+			.duration(200)
+			.style('opacity', (d: any) => {
+				if (!d.children && !element.checked) return 0
+				return 1
+			})
+	})
+
+	const width = window.innerWidth
+	const height = window.innerHeight
 	const radius = Math.min(width, height) / 3
 	randomizeData(nodeData)
 
@@ -216,6 +229,7 @@ async function start() {
 				return getTextAnchor(d)
 			})
 			.append('text')
+			.attr('class', 'node-label')
 			.attr('transform', function (d: any) {
 				return `translate(${arc.centroid(d)})rotate(${getTextRotation(d)})`
 			})
@@ -228,9 +242,10 @@ async function start() {
 			.text((d: any) => {
 				return d.parent ? d.data.name : ''
 			})
-			.style('fill', (d: any) => {
-				// if (d.ancestors().length > 3) return 'none'
-				return 'white'
+			.style('fill', '#fff')
+			.style('opacity', (d: any) => {
+				if (!d.children) return 0
+				return 1
 			})
 			.style('font', 'bold .6rem arial')
 
