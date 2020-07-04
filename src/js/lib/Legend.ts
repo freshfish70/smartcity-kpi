@@ -9,7 +9,7 @@ export interface LegendConfig {
 	width: number
 	items: Array<{
 		name: string
-		score: number
+		colorValue: string
 		targetAvailable: TargetAvailable
 	}>
 	hoverCallback?: (d: any) => void
@@ -87,11 +87,7 @@ export const Legend = (
 
 	group
 		.append('circle')
-		.attr('fill', (d: any) => {
-			return d.targetAvailable == TargetAvailable.AVAILABLE
-				? colorScaleForValues(d.score)
-				: colorScaleForNoValues(d.targetAvailable)
-		})
+		.attr('fill', (d: any) => d.colorValue)
 		.attr('r', colorIndicatorRadius)
 		.attr('cy', (d: any, i) => {
 			return i * yOffsetfactor + yOffsetfactor - colorIndicatorRadius / 2

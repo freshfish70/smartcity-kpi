@@ -40,61 +40,44 @@ async function start() {
 	let tooltip = [
 		{
 			name: '95+ % of Target',
-			score: 95.01,
+			colorValue: colorScaleForValues(96),
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '66-95 % of Target',
-			score: 66.0,
+			colorValue: colorScaleForValues(67),
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: '33-66 % of Target',
-			score: 33.0,
+			colorValue: colorScaleForValues(34),
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: 'Less than 33 % of Target',
-			score: 32,
+			colorValue: colorScaleForValues(30),
 			targetAvailable: TargetAvailable.AVAILABLE,
 		},
 		{
 			name: 'No Data or No Target',
-			score: 0,
+			colorValue: colorScaleForNoValues(TargetAvailable.NO_TARGET),
 			targetAvailable: TargetAvailable.NO_TARGET,
 		},
 		{
 			name: 'Data Reported - No targets yet available',
-			score: 0,
+			colorValue: colorScaleForNoValues(TargetAvailable.DATA_REPORTED),
 			targetAvailable: TargetAvailable.DATA_REPORTED,
 		},
 	]
 
-	let selectedScoreValue: any = {
-		score: 0,
-		target: true,
-	}
+	let selectedScoreValue: string | null = null
 
 	tooltipGroup.call(Legend, {
 		x: width - 420,
 		y: 40,
 		items: tooltip,
 		hoverCallback: (d) => {
-			if (d.targetAvailable == TargetAvailable.AVAILABLE) {
-				selectedScoreValue = {
-					score: d.score,
-					target: true,
-				}
-			} else {
-				selectedScoreValue = {
-					score: d.targetAvailable,
-					target: false,
-				}
-				{
-					selectedScoreValue.target = false
-					selectedScoreValue.score = d.targetAvailable
-				}
-			}
+			selectedScoreValue = d.colorValue
 			render()
 		},
 		hoverLeaveCallback: (d) => {
@@ -148,25 +131,6 @@ async function start() {
 	render()
 	createText()
 
-	let filters = [
-		{
-			max: 100,
-			min: 95.01,
-		},
-		{
-			max: 95,
-			min: 66.0,
-		},
-		{
-			max: 65.99,
-			min: 33.0,
-		},
-		{
-			max: 32.99,
-			min: 0,
-		},
-	]
-
 	function render() {
 		sunburstGroup
 			.selectAll('g')
@@ -187,7 +151,8 @@ async function start() {
 								d.data.targetAvailable == TargetAvailable.NO_TARGET ||
 								d.data.targetAvailable == TargetAvailable.DATA_REPORTED
 							) {
-								return colorScaleForNoValues(d.data.targetAvailable)
+								let color = colorScaleForNoValues(d.data.targetAvailable)
+								return color
 							}
 							return colorScaleForValues(d.data.score) as any
 						})
@@ -195,27 +160,23 @@ async function start() {
 				function (update: any) {
 					return update
 						.transition()
-						.duration(150)
+						.duration(200)
 						.attr('opacity', (d: any) => {
 							if (selectedScoreValue == null) return 1
+
 							if (
-								selectedScoreValue.target &&
-								d.data.targetAvailable == TargetAvailable.AVAILABLE
+								d.data.targetAvailable == TargetAvailable.AVAILABLE &&
+								selectedScoreValue == colorScaleForValues(d.data.score)
 							) {
-								for (const filter of filters) {
-									if (
-										selectedScoreValue.score >= filter.min &&
-										selectedScoreValue.score <= filter.max
-									) {
-										let score = d.data.score
-										if (score >= filter.min && score <= filter.max) return 1
-									}
-								}
-							} else {
-								if (selectedScoreValue.score == d.data.targetAvailable) {
-									return 1
-								}
+								return 1
+							} else if (
+								d.data.targetAvailable != TargetAvailable.AVAILABLE &&
+								selectedScoreValue ==
+									colorScaleForNoValues(d.data.targetAvailable)
+							) {
+								return 1
 							}
+
 							return 0.2
 						})
 				}
