@@ -12,7 +12,7 @@ import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
 
 async function start() {
-	var nodeData: any = await d3.json('alesundkpi.json')
+	var nodeData: any = await d3.json('public/alesundkpi.json')
 
 	var toggle = document.getElementById('toggle')
 	toggle?.addEventListener('change', (e) => {
