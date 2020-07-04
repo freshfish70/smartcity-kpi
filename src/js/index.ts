@@ -3,17 +3,27 @@ import * as d3 from 'd3'
 
 import { colorScaleForNoValues, colorScaleForValues } from '@helpers/Colors'
 import { getTextRotation } from '@helpers/getTextRotation'
-import {
-	SmartCityPerformance,
-	TargetAvailable,
-} from '@lib/SmartCityPerformance'
+import { SmartCityPerformance, TargetAvailable } from '@lib/SmartCityPerformance'
 import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend'
 import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
+import { HierarchyNode, partition } from 'd3'
+import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
-async function start() {
+export interface SunburstConfig {
+	width: number
+	height: number
+	radius: number
+	rootHtmlNode: string
+	elementId: string
+}
+
+async function createSunBurst(config: SunburstConfig) {
+	const { width, height, radius, rootHtmlNode = 'body', elementId } = config
+
 	var nodeData: any = await d3.json('public/alesundkpi.json')
+	randomizeData(nodeData)
 
 	var toggle = document.getElementById('toggle')
 	toggle?.addEventListener('change', (e) => {
@@ -28,71 +38,54 @@ async function start() {
 			})
 	})
 
-	const width = window.innerWidth - 310
-	const height = window.innerHeight
-	const radius = Math.min(width, height) / 3
-	randomizeData(nodeData)
+	/**
+	 * DATA SETUP
+	 */
 
-	const svg = d3
-		.select('body')
-		.append('svg')
-		.attr('width', width)
-		.attr('height', height)
-
-	const sidebar = d3.select('#sunburst-sidebar')
-	const legend = sidebar
-		.insert<HTMLElement>('ul', ':first-child')
-		.attr('class', 'legend')
-
-	let selectedScoreValue: string | null = null
-
-	const sunburstGroup = svg
-		.append('g')
-		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')') // <-- 4
-
-	const root = d3
+	const hierarchyDataNode = d3
 		.hierarchy<SmartCityPerformance>(nodeData)
 		.sum(function (d: SmartCityPerformance) {
 			return d.children ? 0 : 20
 		})
 
-	const partition = d3.partition().size([2 * Math.PI, radius])
+	const partitionedRoot = partition<SmartCityPerformance>().size([2 * Math.PI, radius])(
+		hierarchyDataNode
+	)
 
-	sidebar
-		.insert('h3', ':first-child')
-		.text(root.ancestors()[0].data.name + ' KPI')
-	sidebar
-		.insert('span', '.legend')
-		.text('Click a label for filtering')
-		.attr('class', 'is-italic')
+	/**
+	 * SVG SUNBURST SETUP
+	 */
+	const sunburst = d3
+		.select(rootHtmlNode)
+		.append('svg')
+		.attr('id', elementId)
+		.attr('width', width)
+		.attr('height', height)
 
-	partition(root)
+	const sunburstGroup = sunburst
+		.append('g')
+		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
 	sunburstGroup
 		.append('text')
 		.attr('text-anchor', 'middle')
 		.style('font', 'bold 1.2rem Arial')
-		.text(root.ancestors()[0].data.name)
+		.text(partitionedRoot.ancestors()[0].data.name)
 
-	var arc = d3
-		.arc()
-		.startAngle(function (d: any) {
-			return d.x0
-		})
-		.endAngle(function (d: any) {
-			return d.x1
-		})
-		.innerRadius(function (d: any) {
-			if (!d.children) return d.y0 * 1.1
-			if (d.ancestors().length == 3) return d.y0 * 0.8
-			return d.y0
-		})
-		.outerRadius(function (d: any) {
-			if (!d.children) return d.y1 * 0.9
-			if (d.ancestors().length == 2) return d.y1 * 0.8
-			if (d.ancestors().length == 3) return d.y1 * 1.1
-			return d.y1
-		})
+	/**
+	 * SIDEBAR SETUP
+	 */
+	const sidebar = d3.select('#sunburst-sidebar')
+	const legend = sidebar.insert<HTMLElement>('ul', ':first-child').attr('class', 'legend')
+	sidebar.insert('h3', ':first-child').text(hierarchyDataNode.ancestors()[0].data.name + ' KPI')
+	sidebar.insert('span', '.legend').text('Click a label for filtering').attr('class', 'is-italic')
+
+	let selectedScoreValue: string | null = null
+
+	const isTargetAvailable = (node: HierarchyNode<SmartCityPerformance>) =>
+		node.data.targetAvailable == TargetAvailable.AVAILABLE
+	const getTargetAvailable = (node: HierarchyNode<SmartCityPerformance>) =>
+		node.data.targetAvailable
 
 	render()
 	createText()
@@ -100,7 +93,7 @@ async function start() {
 	function render() {
 		sunburstGroup
 			.selectAll('g')
-			.data(root.descendants())
+			.data(partitionedRoot.descendants())
 			.join(
 				function (enter) {
 					return enter
@@ -110,41 +103,38 @@ async function start() {
 						.attr('display', function (d) {
 							return d.depth ? null : 'none'
 						})
-						.attr('d', arc as any)
+						.attr('d', sunburstArc)
 						.style('stroke', '#fff')
-						.attr('fill', (d: any) => {
-							if (
-								d.data.targetAvailable == TargetAvailable.NO_TARGET ||
-								d.data.targetAvailable == TargetAvailable.DATA_REPORTED
-							) {
-								let color = colorScaleForNoValues(d.data.targetAvailable)
-								return color
+						.attr('fill', (d) => {
+							if (isTargetAvailable(d)) {
+								return colorScaleForValues(d.data.score ? d.data.score : 0) as any
 							}
-							return colorScaleForValues(d.data.score) as any
+							let color = colorScaleForNoValues(getTargetAvailable(d))
+							return color
 						})
 				},
-				function (update: any) {
-					return update
+				function (update) {
+					update
 						.transition()
 						.duration(200)
-						.attr('opacity', (d: any) => {
+						.attr('opacity', (d) => {
 							if (selectedScoreValue == null) return 1
-
+							const targetAvailable = isTargetAvailable(d)
 							if (
-								d.data.targetAvailable == TargetAvailable.AVAILABLE &&
-								selectedScoreValue == colorScaleForValues(d.data.score)
+								targetAvailable &&
+								selectedScoreValue == colorScaleForValues(d.data.score ? d.data.score : 0)
 							) {
 								return 1
 							} else if (
-								d.data.targetAvailable != TargetAvailable.AVAILABLE &&
-								selectedScoreValue ==
-									colorScaleForNoValues(d.data.targetAvailable)
+								!targetAvailable &&
+								selectedScoreValue == colorScaleForNoValues(d.data.targetAvailable)
 							) {
 								return 1
 							}
 
 							return 0.2
 						})
+					return update
 				}
 			)
 
@@ -157,24 +147,23 @@ async function start() {
 				if (d.colorValue === selectedScoreValue) selectedScoreValue = null
 				else selectedScoreValue = d.colorValue
 				render()
-			},
+			}
 		} as LegendConfig)
 	}
 
 	function createText() {
 		sunburstGroup
 			.selectAll('.node')
-			.attr('text-anchor', function (d: any) {
+			.attr('text-anchor', (d: unknown) => {
 				return getTextAnchor(d)
 			})
 			.append('text')
 			.attr('class', 'node-label')
 			.attr('transform', function (d: any) {
-				return `translate(${arc.centroid(d)})rotate(${getTextRotation(d)})`
+				return `translate(${sunburstArc.centroid(d)})rotate(${getTextRotation(d)})`
 			})
 			.attr('dx', (d: any) => {
-				if (!d.children)
-					return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
+				if (!d.children) return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
 				return 0
 			})
 			.attr('dy', '.5em')
@@ -198,13 +187,18 @@ async function start() {
 						return d.data.name
 					})
 					.reverse()
-					.join('/')}\n${
-					d.data.targetAvailable == TargetAvailable.AVAILABLE
-						? d.data.score.toFixed(2)
-						: 0
-				}%`
+					.join('/')}\n${isTargetAvailable(d) ? d.data.score.toFixed(2) : 0}%`
 			})
 	}
 }
 
-start()
+const documentWidth = window.innerWidth - 310
+const documentHeight = window.innerHeight
+
+createSunBurst({
+	width: documentWidth,
+	height: documentHeight,
+	radius: Math.min(documentWidth, documentHeight) / 3,
+	elementId: 'sunburst',
+	rootHtmlNode: 'body'
+})
