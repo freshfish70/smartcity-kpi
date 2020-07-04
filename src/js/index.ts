@@ -9,6 +9,7 @@ import {
 import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend'
 import { tooltip } from '@helpers/tooltip'
+import { getTextAnchor } from '@helpers/getTextAnchor'
 
 async function start() {
 	var nodeData: any = await d3.json('alesundkpi.json')
@@ -195,34 +196,6 @@ async function start() {
 						: 0
 				}%`
 			})
-	}
-
-	/**
-	 * Returns the text anchor for a text element.
-	 * If the elements has children, return middle.
-	 * If not return start / end depending on the angle of the text.
-	 * Text from 90-270* range has anchone on end
-	 * @param d node to get text position on
-	 */
-	function getTextAnchor(d: any) {
-		if (d.children) return 'middle'
-		var angle = ((d.x0 + d.x1) / Math.PI) * 90
-		return angle < 180 ? 'start' : 'end'
-	}
-
-	/**
-	 * Returns the sum of all the children a node has
-	 * @param node the node to get child count of
-	 */
-	function countAllChildren(node: SmartCityPerformance): number {
-		let sum = 0
-		if (node.children) {
-			sum += node.children.length
-			for (const child of node.children) {
-				sum += countAllChildren(child)
-			}
-		}
-		return sum
 	}
 }
 
