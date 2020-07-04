@@ -128,13 +128,39 @@ input:checked+.slider:before {
 }
 
 /***********************
+   SUNBURST
+***********************/
+
+#sunburst-container {
+	z-index: 500;
+}
+
+/***********************
+   LEAFLET
+***********************/
+
+
+#leaflet-map {
+	height: 100vh;
+
+}
+
+.map-label {
+	font-size: 2em;
+	font-weight: 700;
+	color: slateblue;
+	margin: 0 -125px !important;
+	width: 250px !important;
+	text-align: center;
+}
+
+/***********************
    HELPERS
 ***********************/
 
 .is-italic {
 	font-style: italic;
 }
-
 
 
 @media only screen and (max-width: 1200px) {
