@@ -192,6 +192,6 @@ export async function createSunBurst(config: SunburstConfig) {
 }
 
 export function destroySunburst() {
-	d3.select('svg').remove()
+	d3.select('#sunburst').remove()
 	d3.select('#sunburst-sidebar #legend-container').remove()
 }
