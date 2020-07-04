@@ -132,7 +132,12 @@ input:checked+.slider:before {
 ***********************/
 
 #sunburst-container {
-	z-index: 500;
+	z-index: 25000;
+	background: #3c4962;
+	position: absolute;
+	top: 0;
+	width: 100vw;
+	height: 100vh;
 }
 
 /***********************
