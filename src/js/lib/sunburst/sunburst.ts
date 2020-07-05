@@ -18,7 +18,7 @@ export interface SunburstConfig {
 	elementId: string
 }
 
-var toggle = document.getElementById('label-toggler')
+var toggle = document.getElementById('label-toggler') as HTMLInputElement
 toggle?.addEventListener('change', (e) => {
 	const element = e.target as HTMLInputElement
 	d3.selectAll('.node-label')
@@ -57,6 +57,7 @@ close?.addEventListener('click', (e) => {
 		.duration(350)
 		.style('transform', 'translate(100vw,0px)')
 		.call(destroySunburst)
+	toggle.checked = false
 })
 
 export async function createSunBurst(config: SunburstConfig) {
