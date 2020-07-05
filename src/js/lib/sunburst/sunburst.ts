@@ -4,7 +4,7 @@ import { colorScaleForNoValues, colorScaleForValues } from '@helpers/Colors'
 import { getTextRotation } from '@helpers/getTextRotation'
 import { SmartCityPerformance, TargetAvailable } from '@lib/SmartCityPerformance'
 import { randomizeData } from '@helpers/randomizeData'
-import { Legend, LegendConfig } from '@lib/Legend'
+import { Legend, LegendConfig } from '@lib/Legend/Legend'
 import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
 import { HierarchyNode, partition, D3ZoomEvent } from 'd3'
@@ -29,26 +29,6 @@ toggle?.addEventListener('change', (e) => {
 			return 1
 		})
 })
-
-var sidebarClose = document.getElementById('sidebar-close')
-var sunburstSidebar = document.getElementById('sunburst-sidebar')
-
-let sidebarClosed = true
-sidebarClose?.addEventListener('click', (e) => closeHandler(e.target as HTMLElement))
-closeHandler(sidebarClose)
-
-function closeHandler(element: HTMLElement | null) {
-	if (!element) return
-	if (sidebarClosed) {
-		sidebarClosed = false
-		sunburstSidebar?.classList.add('closed-sidebar')
-		element.innerHTML = `<i class="fas fa-chevron-left"></i>`
-	} else {
-		sidebarClosed = true
-		sunburstSidebar?.classList.remove('closed-sidebar')
-		element.innerHTML = `<i class="fas fa-chevron-right"></i>`
-	}
-}
 
 var close = document.getElementById('sunburst-close')
 close?.addEventListener('click', (e) => {

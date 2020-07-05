@@ -1,5 +1,6 @@
 import { Selection } from 'd3'
-import { Tooltip } from './Tootip'
+import { Tooltip } from '@lib/Tootip'
+import { setupSidebarCloseHandler } from '@lib/Legend/LegendSidebar'
 
 export interface LegendConfig {
 	x: number
@@ -13,23 +14,14 @@ export interface LegendConfig {
 	clickCallback?: (d: any) => void
 }
 
+setupSidebarCloseHandler()
+
 export const Legend = (
 	selection: Selection<HTMLElement, unknown, Element, any>,
-	{
-		x = 0,
-		y = 0,
-		items = [],
-		height = 220,
-		width = 380,
-		selectedScoreValue,
-		hoverCallback,
-		hoverLeaveCallback,
-		clickCallback,
-	}: LegendConfig
+	{ items = [], selectedScoreValue, hoverCallback, hoverLeaveCallback, clickCallback }: LegendConfig
 ) => {
 	selection.datum(items)
-
-	const group = selection
+	selection
 		.selectAll('li')
 		.data((d: any) => d)
 		.join(
