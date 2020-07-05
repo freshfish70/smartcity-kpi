@@ -7,7 +7,7 @@ import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend'
 import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
-import { HierarchyNode, partition } from 'd3'
+import { HierarchyNode, partition, D3ZoomEvent } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
 export interface SunburstConfig {
@@ -28,6 +28,15 @@ toggle?.addEventListener('change', (e) => {
 			if (!d.children && !element.checked) return 0
 			return 1
 		})
+})
+
+var close = document.getElementById('sunburst-close')
+close?.addEventListener('click', (e) => {
+	d3.select('#sunburst-container')
+		.transition()
+		.duration(350)
+		.style('transform', 'translate(100vw,0px)')
+		.call(destroySunburst)
 })
 
 export async function createSunBurst(config: SunburstConfig) {
@@ -59,7 +68,21 @@ export async function createSunBurst(config: SunburstConfig) {
 		.attr('id', elementId)
 		.attr('width', width)
 		.attr('height', height)
-	console.log(sunburst)
+
+	var zoom: any = d3
+		.zoom()
+		.scaleExtent([0, 8])
+		.on('zoom', function () {
+			sunburst.select('g').attr('transform', () => {
+				let transform = (d3.event as D3ZoomEvent<Element, unknown>).transform
+				const { x, y, k } = transform
+				console.log(transform.applyX(width / 2 + x))
+
+				return `translate(${width / 2 + x}, ${height / 2 + y}) scale(${k <= 0.5 ? 0.5 : k})`
+			})
+		})
+
+	sunburst.call(zoom)
 
 	const sunburstGroup = sunburst
 		.append('g')

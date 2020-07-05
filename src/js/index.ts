@@ -2,31 +2,12 @@ import '../scss/main.scss'
 
 import { createSunBurst, destroySunburst } from '@lib/sunburst/sunburst'
 import leaflet from 'leaflet'
+import { select } from 'd3'
 
-const documentWidth = window.innerWidth - 310
-const documentHeight = window.innerHeight
+const documentWidth = document.body.clientWidth
+const documentHeight = document.body.clientHeight
 
-var to = document.getElementById('show')
 var sbc = document.getElementById('sunburst-container')
-
-if (sbc) sbc.hidden = true
-to?.addEventListener('click', async () => {
-	if (sbc) {
-		if (sbc.hidden) {
-			await createSunBurst({
-				width: documentWidth,
-				height: documentHeight,
-				radius: Math.min(documentWidth, documentHeight) / 3,
-				elementId: 'sunburst',
-				rootHtmlNode: '#sunburst-container'
-			})
-			sbc.hidden = false
-		} else {
-			sbc.hidden = true
-			destroySunburst()
-		}
-	}
-})
 
 const cities = [
 	{
@@ -95,19 +76,18 @@ for (const city of cities) {
 		})
 		.on('click', async () => {
 			if (sbc) {
-				if (sbc.hidden) {
-					await createSunBurst({
-						width: documentWidth,
-						height: documentHeight,
-						radius: Math.min(documentWidth, documentHeight) / 3,
-						elementId: 'sunburst',
-						rootHtmlNode: '#sunburst-container'
-					})
-					sbc.hidden = false
-				} else {
-					sbc.hidden = true
-					destroySunburst()
-				}
+				await createSunBurst({
+					width: documentWidth,
+					height: documentHeight,
+					radius: Math.min(documentWidth, documentHeight) / 3,
+					elementId: 'sunburst',
+					rootHtmlNode: '#sunburst-container'
+				})
+
+				select('#sunburst-container')
+					.transition()
+					.duration(600)
+					.style('transform', 'translate(0px,0px)')
 			}
 		})
 		.addTo(map)

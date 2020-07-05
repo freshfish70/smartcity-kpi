@@ -130,6 +130,12 @@ input:checked+.slider:before {
 /***********************
    SUNBURST
 ***********************/
+.close {
+	position: absolute;
+	font-size: 2rem;
+	margin: .5rem;
+	color: #d76666;
+}
 
 #sunburst-container {
 	z-index: 25000;
@@ -138,12 +144,12 @@ input:checked+.slider:before {
 	top: 0;
 	width: 100vw;
 	height: 100vh;
+	transform: translateX(100vw);
 }
 
 /***********************
    LEAFLET
 ***********************/
-
 
 #leaflet-map {
 	height: 100vh;
