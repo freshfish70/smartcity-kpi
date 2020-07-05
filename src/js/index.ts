@@ -66,7 +66,12 @@ const cities = [
 	}
 ]
 
-var map = leaflet.map('leaflet-map', { maxZoom: 7 }).setView([61.14, 9.25], 7)
+var map = leaflet
+	.map('leaflet-map', { maxZoom: 7, minZoom: 5, zoomSnap: 0.1, zoomDelta: 0.1 })
+	.setView([61.14, 9.25], 7)
+
+map.on('zoomanim', (e) => resizeLabels(e.zoom))
+
 leaflet
 	.tileLayer(
 		'https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=norges_grunnkart_graatone&zoom={z}&x={x}&y={y}',
@@ -78,18 +83,42 @@ leaflet
 
 for (const city of cities) {
 	leaflet
-		.circle([city.long, city.lat], {
-			color: 'steelblue',
-			radius: 7000
-		})
-		.addTo(map)
-
-	leaflet
 		.marker([city.long, city.lat], {
 			icon: leaflet.divIcon({
+				iconSize: undefined,
 				className: 'map-label',
-				html: city.name
+				html:
+					'<div><div class="map-pin"></div><span class="map-label-text">' +
+					city.name +
+					'</span></div>'
 			})
 		})
+		.on('click', async () => {
+			if (sbc) {
+				if (sbc.hidden) {
+					await createSunBurst({
+						width: documentWidth,
+						height: documentHeight,
+						radius: Math.min(documentWidth, documentHeight) / 3,
+						elementId: 'sunburst',
+						rootHtmlNode: '#sunburst-container'
+					})
+					sbc.hidden = false
+				} else {
+					sbc.hidden = true
+					destroySunburst()
+				}
+			}
+		})
 		.addTo(map)
+}
+resizeLabels(map.getZoom())
+
+function resizeLabels(zoomlevel: any) {
+	let elements = document.getElementsByClassName('map-label-text')
+	for (let index = 0; index < elements.length; index++) {
+		const element = elements[index] as HTMLDivElement
+		let fontSize = 20 * Math.log10(zoomlevel)
+		element.style.fontSize = `${fontSize}px`
+	}
 }
