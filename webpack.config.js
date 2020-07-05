@@ -10,50 +10,49 @@ module.exports = {
 			{
 				test: /\.tsx?$/,
 				use: 'ts-loader',
-				exclude: /node_modules/,
+				exclude: /node_modules/
 			},
 			{
 				test: /\.s[ac]ss$/i,
 				use: [
-					process.env.NODE_ENV !== 'production'
-						? 'style-loader'
-						: MiniCssExtractPlugin.loader,
+					process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader,
 					// Translates CSS into CommonJS
 					'css-loader',
 					// Compiles Sass to CSS
-					'sass-loader',
-				],
-			},
-		],
+					'sass-loader'
+				]
+			}
+		]
 	},
 	plugins: [
 		new MiniCssExtractPlugin({
 			filename: 'style/[name].css',
-			chunkFilename: '[id].css',
+			chunkFilename: '[id].css'
 		}),
 		new CopyPlugin({
 			patterns: [
 				{ from: './public/**/*', to: '', force: true },
-				{ from: './src/html/*', force: true, flatten: true },
-			],
-		}),
+				{ from: './src/html/*', force: true, flatten: true }
+			]
+		})
 	],
 	resolve: {
 		extensions: ['.tsx', '.ts', '.js'],
 		alias: {
 			'@lib': path.resolve(__dirname, 'src/js/lib'),
 			'@config': path.resolve(__dirname, 'src/js/configs'),
-			'@helpers': path.resolve(__dirname, 'src/js/helpers'),
-		},
+			'@helpers': path.resolve(__dirname, 'src/js/helpers')
+		}
 	},
 	output: {
 		filename: 'js/bundle.js',
-		path: path.resolve(__dirname, 'dist'),
+		path: path.resolve(__dirname, 'dist')
 	},
 	devServer: {
 		contentBase: [path.join(__dirname, './dist/')],
 		compress: true,
+		host: '0.0.0.0',
 		hot: true,
-		port: 9000,
-	},
+		port: 9000
+	}
 }
