@@ -30,6 +30,26 @@ toggle?.addEventListener('change', (e) => {
 		})
 })
 
+var sidebarClose = document.getElementById('sidebar-close')
+var sunburstSidebar = document.getElementById('sunburst-sidebar')
+
+let sidebarClosed = false
+sidebarClose?.addEventListener('click', (e) => closeHandler(e.target as HTMLElement))
+closeHandler(sidebarClose)
+
+function closeHandler(element: HTMLElement | null) {
+	if (!element) return
+	if (sidebarClosed) {
+		sidebarClosed = false
+		sunburstSidebar?.classList.add('closed-sidebar')
+		element.innerHTML = `<i class="fas fa-chevron-left"></i>`
+	} else {
+		sidebarClosed = true
+		sunburstSidebar?.classList.remove('closed-sidebar')
+		element.innerHTML = `<i class="fas fa-chevron-right"></i>`
+	}
+}
+
 var close = document.getElementById('sunburst-close')
 close?.addEventListener('click', (e) => {
 	d3.select('#sunburst-container')

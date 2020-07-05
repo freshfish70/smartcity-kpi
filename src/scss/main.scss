@@ -88,17 +88,37 @@ input:checked+.slider:before {
 /***********************
    SIDEBAR
 ***********************/
+.closed-sidebar {
+	transform: translateX(calc(300px + 2rem));
+}
+
 .sidebar {
 	list-style-type: none;
 	background: #2b3548;
 	padding: .5rem 1rem;
-	border-radius: .5rem;
+	border-radius: 1rem 0 0 1rem;
 	position: fixed;
 	top: 0;
 	right: 0;
-	margin: 1rem .5rem;
+	margin: 1rem 0;
 	height: calc(100vh - 3rem);
-	min-width: 250px;
+	width: 300px;
+	transition: transform .5s ease-in-out;
+
+
+
+	.sidebar-close {
+		position: absolute;
+		top: 50%;
+		left: -40px;
+		background: #3a9bcd;
+		width: 40px;
+		height: 60px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 20px 0 0 20px;
+	}
 }
 
 /***********************
@@ -144,7 +164,7 @@ input:checked+.slider:before {
 	top: 0;
 	width: 100vw;
 	height: 100vh;
-	transform: translateX(100vw);
+	// transform: translateX(100vw);
 }
 
 /***********************
