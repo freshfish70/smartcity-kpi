@@ -49,7 +49,7 @@ const cities = [
 
 var map = leaflet
 	.map('leaflet-map', { maxZoom: 7, minZoom: 5, zoomSnap: 0.1, zoomDelta: 0.1 })
-	.setView([61.14, 9.25], 7)
+	.setView([65, 13], 5)
 
 map.on('zoomanim', (e) => resizeLabels(e.zoom))
 
