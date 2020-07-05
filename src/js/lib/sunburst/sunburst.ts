@@ -33,7 +33,7 @@ toggle?.addEventListener('change', (e) => {
 var sidebarClose = document.getElementById('sidebar-close')
 var sunburstSidebar = document.getElementById('sunburst-sidebar')
 
-let sidebarClosed = false
+let sidebarClosed = true
 sidebarClose?.addEventListener('click', (e) => closeHandler(e.target as HTMLElement))
 closeHandler(sidebarClose)
 
