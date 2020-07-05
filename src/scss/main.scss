@@ -195,10 +195,8 @@ input:checked+.slider:before {
 }
 
 
-@media only screen and (max-width: 1200px) {
-
-	body,
-	html {
-		font-size: 13px;
+@media only screen and (max-width: 1000px) {
+	svg {
+		font-size: 6px;
 	}
 }

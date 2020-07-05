@@ -79,7 +79,7 @@ for (const city of cities) {
 				await createSunBurst({
 					width: documentWidth,
 					height: documentHeight,
-					radius: Math.min(documentWidth, documentHeight) / 3,
+					radius: Math.min(documentWidth, documentHeight) / 2,
 					elementId: 'sunburst',
 					rootHtmlNode: '#sunburst-container'
 				})

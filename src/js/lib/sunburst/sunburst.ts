@@ -74,10 +74,7 @@ export async function createSunBurst(config: SunburstConfig) {
 		.scaleExtent([0, 8])
 		.on('zoom', function () {
 			sunburst.select('g').attr('transform', () => {
-				let transform = (d3.event as D3ZoomEvent<Element, unknown>).transform
-				const { x, y, k } = transform
-				console.log(transform.applyX(width / 2 + x))
-
+				const { x, y, k } = (d3.event as D3ZoomEvent<Element, unknown>).transform
 				return `translate(${width / 2 + x}, ${height / 2 + y}) scale(${k <= 0.5 ? 0.5 : k})`
 			})
 		})
@@ -91,7 +88,7 @@ export async function createSunBurst(config: SunburstConfig) {
 	sunburstGroup
 		.append('text')
 		.attr('text-anchor', 'middle')
-		.style('font', 'bold 1.2rem Arial')
+		.style('font', 'bold 1.2em Arial')
 		.text(partitionedRoot.ancestors()[0].data.name)
 
 	/**
@@ -197,7 +194,7 @@ export async function createSunBurst(config: SunburstConfig) {
 				if (!d.children) return 0
 				return 1
 			})
-			.style('font', 'bold .6rem arial')
+			.style('font-weight', '400')
 
 		sunburstGroup
 			.selectAll('.node')
