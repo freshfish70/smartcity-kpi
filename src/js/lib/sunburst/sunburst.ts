@@ -7,7 +7,7 @@ import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend/Legend'
 import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
-import { HierarchyNode, partition, D3ZoomEvent } from 'd3'
+import { HierarchyNode, partition, D3ZoomEvent, select } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
 export interface SunburstConfig {
@@ -45,10 +45,10 @@ export async function createSunBurst(config: SunburstConfig) {
 
 	var nodeData: any = await d3.json('public/alesundkpi.json')
 	randomizeData(nodeData)
-
 	/**
 	 * DATA SETUP
 	 */
+	elementId
 
 	const hierarchyDataNode = d3
 		.hierarchy<SmartCityPerformance>(nodeData)
@@ -56,7 +56,7 @@ export async function createSunBurst(config: SunburstConfig) {
 			return d.children ? 0 : 20
 		})
 
-	const partitionedRoot = partition<SmartCityPerformance>().size([2 * Math.PI, radius])(
+	let partitionedRoot = partition<SmartCityPerformance>().size([2 * Math.PI, radius])(
 		hierarchyDataNode
 	)
 
@@ -67,8 +67,11 @@ export async function createSunBurst(config: SunburstConfig) {
 		.select(rootHtmlNode)
 		.append('svg')
 		.attr('id', elementId)
-		.attr('width', width)
-		.attr('height', height)
+		.attr('width', 100 + '%')
+		.attr('height', 100 + '%')
+		.attr('preserveAspectRatio', 'xMidYMid slice')
+		.attr('viewBox', '0 0 ' + width + ' ' + height + '')
+		.classed('svg-content', true)
 
 	var zoom: any = d3
 		.zoom()
@@ -84,6 +87,7 @@ export async function createSunBurst(config: SunburstConfig) {
 
 	const sunburstGroup = sunburst
 		.append('g')
+		.attr('id', 'node-group')
 		.attr('transform', 'translate(' + width / 2 + ',' + height / 2 + ')')
 
 	sunburstGroup
@@ -111,6 +115,11 @@ export async function createSunBurst(config: SunburstConfig) {
 	createText()
 
 	function render() {
+		drawSunburst()
+		drawSidebar()
+	}
+
+	function drawSunburst() {
 		sunburstGroup
 			.selectAll('g')
 			.data(partitionedRoot.descendants())
@@ -157,7 +166,9 @@ export async function createSunBurst(config: SunburstConfig) {
 					return update
 				}
 			)
+	}
 
+	function drawSidebar() {
 		legend.call(Legend, {
 			x: width - 420,
 			y: 40,
@@ -170,6 +181,31 @@ export async function createSunBurst(config: SunburstConfig) {
 			}
 		} as LegendConfig)
 	}
+
+	function removeSunburst() {
+		sunburstGroup.selectAll('g').remove()
+	}
+
+	function removeLegend() {
+		d3.select('#sunburst-sidebar #legend-container').remove()
+	}
+
+	let scaleTimeoutCallback: any
+	globalThis.addEventListener('resize', (e) => {
+		if (scaleTimeoutCallback) clearInterval(scaleTimeoutCallback)
+		scaleTimeoutCallback = setTimeout(() => {
+			config.width = document.body.clientWidth
+			config.height = document.body.clientHeight
+			config.radius = Math.min(config.width, config.height) / 2
+			partitionedRoot = partition<SmartCityPerformance>().size([2 * Math.PI, config.radius])(
+				hierarchyDataNode
+			)
+			sunburst.attr('viewBox', '0 0 ' + config.width + ' ' + config.height + '')
+			removeSunburst()
+			drawSunburst()
+			createText()
+		}, 20)
+	})
 
 	function createText() {
 		sunburstGroup
@@ -209,6 +245,10 @@ export async function createSunBurst(config: SunburstConfig) {
 					.reverse()
 					.join('/')}\n${isTargetAvailable(d) ? d.data.score.toFixed(2) : 0}%`
 			})
+	}
+
+	function removetext() {
+		sunburstGroup.selectAll('text').remove()
 	}
 }
 
