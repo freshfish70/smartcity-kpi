@@ -7,7 +7,7 @@ import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend/Legend'
 import { tooltip } from '@helpers/tooltip'
 import { getTextAnchor } from '@helpers/getTextAnchor'
-import { HierarchyNode, partition, D3ZoomEvent, select } from 'd3'
+import { HierarchyNode, partition, D3ZoomEvent, select, selectAll } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
 export interface SunburstConfig {
@@ -16,6 +16,7 @@ export interface SunburstConfig {
 	radius: number
 	rootHtmlNode: string
 	elementId: string
+	name: string
 }
 
 var toggle = document.getElementById('label-toggler') as HTMLInputElement
@@ -29,6 +30,35 @@ toggle?.addEventListener('change', (e) => {
 			return 1
 		})
 })
+
+var toggle = document.getElementById('compare-toggler') as HTMLInputElement
+var compareToggled = false
+var selectedComparator = ''
+
+var dimensioncompare = document.getElementById('compare-dimension') as HTMLInputElement
+var subdimensioncompare = document.getElementById('compare-sub-dimension') as HTMLInputElement
+var categorycompare = document.getElementById('compare-category') as HTMLInputElement
+
+var selectedCity = document.getElementById('compare-selected-city') as HTMLInputElement
+
+selectedCity.addEventListener('change', (e: any) => {
+	console.log(e.target.value)
+})
+
+dimensioncompare.addEventListener('change', (e: any) => {
+	if (e.target.checked) setSelectedComparator('dimension')
+})
+subdimensioncompare.addEventListener('change', (e: any) => {
+	if (e.target.checked) setSelectedComparator('sub-dimension')
+})
+categorycompare.addEventListener('change', (e: any) => {
+	if (e.target.checked) setSelectedComparator('category')
+})
+
+function setSelectedComparator(selected: string) {
+	selectedComparator = selected
+	console.log('selected is: ' + selectedComparator)
+}
 
 var close = document.getElementById('sunburst-close')
 close?.addEventListener('click', (e) => {
@@ -50,7 +80,7 @@ export async function createSunBurst(config: SunburstConfig) {
 	 */
 	elementId
 
-	const hierarchyDataNode = d3
+	let hierarchyDataNode = d3
 		.hierarchy<SmartCityPerformance>(nodeData)
 		.sum(function (d: SmartCityPerformance) {
 			return d.children ? 0 : 20
@@ -94,7 +124,7 @@ export async function createSunBurst(config: SunburstConfig) {
 		.append('text')
 		.attr('text-anchor', 'middle')
 		.style('font', 'bold 1.2em Arial')
-		.text(partitionedRoot.ancestors()[0].data.name)
+		.text(config.name)
 
 	/**
 	 * SIDEBAR SETUP
@@ -128,11 +158,52 @@ export async function createSunBurst(config: SunburstConfig) {
 					return enter
 						.append('g')
 						.attr('class', 'node')
+						.attr('class', (d: any) => {
+							let nodeClass = 'node '
+							if (!d.children) {
+								nodeClass += 'category'
+							} else if (d.parent && !d.parent.parent) {
+								nodeClass += 'dimension'
+							} else {
+								nodeClass += 'sub-dimension'
+							}
+							return nodeClass
+						})
 						.append('path')
+						.on('mouseover', (d: any) => {
+							let selectedNodeClass = 'node '
+							if (!d.children) {
+								selectedNodeClass = 'category'
+							} else if (d.parent && !d.parent.parent) {
+								selectedNodeClass = 'dimension'
+							} else {
+								selectedNodeClass = 'sub-dimension'
+							}
+							selectAll('.node').attr('opacity', (e: any) => {
+								let myNodeClass = 'node'
+								if (!e.children) {
+									myNodeClass = 'category'
+								} else if (e.parent && !e.parent.parent) {
+									myNodeClass = 'dimension'
+								} else {
+									myNodeClass = 'sub-dimension'
+								}
+								if (myNodeClass == selectedNodeClass) {
+									return 1
+								}
+								return 0.2
+							})
+						})
+						.on('mouseout', (e: any) => {
+							selectAll('.node').attr('opacity', (e: any) => {
+								return 1
+							})
+						})
 						.attr('display', function (d) {
 							return d.depth ? null : 'none'
 						})
 						.attr('d', sunburstArc)
+
 						.style('stroke', '#fff')
 						.attr('fill', (d) => {
 							if (isTargetAvailable(d)) {
@@ -207,9 +278,38 @@ export async function createSunBurst(config: SunburstConfig) {
 		}, 20)
 	})
 
+	toggle?.addEventListener('change', async (e) => {
+		compareToggled = !compareToggled
+		const documentWidth = document.body.clientWidth
+		const documentHeight = document.body.clientHeight
+
+		const element = e.target as HTMLInputElement
+
+		if (compareToggled) {
+			var compareData: any = await d3.json('public/compare.json')
+			randomizeData(compareData)
+			if (selectedComparator == 'dimension') {
+				let a = compareData.children
+				const element = Object.assign(nodeData.children)
+				for (let index = 0; index < element.length; index++) {
+					let er = Object.assign({}, a[index])
+					er.children = undefined
+					element[index].children = er
+				}
+
+				removeSunburst()
+				drawSunburst()
+			} else if (selectedComparator == 'sub-dimension') {
+			} else {
+			}
+		}
+	})
+	d3.selectAll('.coparator-selector').on('click', () => {})
+
 	function createText() {
 		sunburstGroup
 			.selectAll('.node')
+
 			.attr('text-anchor', (d: unknown) => {
 				return getTextAnchor(d)
 			})
@@ -254,5 +354,10 @@ export async function createSunBurst(config: SunburstConfig) {
 
 export function destroySunburst() {
 	d3.select('#sunburst').remove()
-	d3.select('#sunburst-sidebar #legend-container').remove()
+	d3.select('#legend-container').remove()
+}
+
+export function destroyComparatorSunburst() {
+	d3.select('#sunburst-comparator-container').remove()
+	d3.select('#legend-container').remove()
 }

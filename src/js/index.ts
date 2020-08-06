@@ -81,7 +81,8 @@ for (const city of cities) {
 					height: documentHeight,
 					radius: Math.min(documentWidth, documentHeight) / 2,
 					elementId: 'sunburst',
-					rootHtmlNode: '#sunburst-container'
+					rootHtmlNode: '#sunburst-container',
+					name: city.name
 				})
 
 				select('#sunburst-container')
