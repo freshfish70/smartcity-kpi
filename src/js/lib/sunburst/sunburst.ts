@@ -19,7 +19,7 @@ export interface SunburstConfig {
 	name: string
 }
 
-var toggle = document.getElementById('label-toggler') as HTMLInputElement
+let toggle = document.getElementById('label-toggler') as HTMLInputElement
 toggle?.addEventListener('change', (e) => {
 	const element = e.target as HTMLInputElement
 	d3.selectAll('.node-label')
@@ -31,36 +31,146 @@ toggle?.addEventListener('change', (e) => {
 		})
 })
 
-var toggle = document.getElementById('compare-toggler') as HTMLInputElement
-var compareToggled = false
-var selectedComparator = ''
+let compareToggler = document.getElementById('compare-toggler') as HTMLInputElement
+let compareToggled = false
+let selectedComparator = ''
 
-var dimensioncompare = document.getElementById('compare-dimension') as HTMLInputElement
-var subdimensioncompare = document.getElementById('compare-sub-dimension') as HTMLInputElement
-var categorycompare = document.getElementById('compare-category') as HTMLInputElement
+let dimensioncompare = document.getElementById('compare-dimension') as HTMLInputElement
+let subdimensioncompare = document.getElementById('compare-sub-dimension') as HTMLInputElement
+let categorycompare = document.getElementById('compare-category') as HTMLInputElement
 
-var selectedCity = document.getElementById('compare-selected-city') as HTMLInputElement
-
+let selectedCity = document.getElementById('compare-selected-city') as HTMLInputElement
 selectedCity.addEventListener('change', (e: any) => {
 	console.log(e.target.value)
 })
 
 dimensioncompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('dimension')
+	if (compareToggled) {
+		createComparator()
+	}
 })
 subdimensioncompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('sub-dimension')
+	if (compareToggled) {
+		createComparator()
+	}
 })
 categorycompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('category')
+	if (compareToggled) {
+		createComparator()
+	}
 })
 
-function setSelectedComparator(selected: string) {
+compareToggler.addEventListener('change', async (e: any) => {
+	if (e.target.checked) {
+		compareToggled = true
+		createComparator()
+	} else {
+		compareToggled = false
+		destroySunburst()
+	}
+})
+
+async function setSelectedComparator(selected: string) {
 	selectedComparator = selected
-	console.log('selected is: ' + selectedComparator)
 }
 
-var close = document.getElementById('sunburst-close')
+async function createComparator() {
+	let base: SmartCityPerformance = await d3.json('public/alesundkpi.json')
+	let compare: SmartCityPerformance = await d3.json('public/kip2.json')
+
+	let performanceData: SmartCityPerformance = {
+		name: base.name,
+		targetAvailable: base.targetAvailable
+	}
+	if (selectedComparator == 'dimension') {
+		performanceData.children = base.children
+		if (performanceData.children) {
+			performanceData.children.forEach((element) => {
+				if (compare.children) {
+					compare.children.forEach((compElement) => {
+						if (element.name == compElement.name) {
+							element.children = [compElement]
+							compElement.children = undefined
+						}
+					})
+				}
+			})
+		}
+	} else if (selectedComparator == 'sub-dimension') {
+		performanceData.children = new Array<SmartCityPerformance>()
+		if (base.children) {
+			for (const dimension of base.children) {
+				if (dimension.children) {
+					performanceData.children = dimension.children
+					for (const subDimension of dimension.children) {
+						if (compare.children) {
+							subDimension.children = []
+							for (const compareSubDimension of compare.children) {
+								if (compareSubDimension.children) {
+									for (const child of compareSubDimension.children) {
+										if (child.name == subDimension.name) {
+											if (compareSubDimension.children) {
+												subDimension.children?.push(child)
+												child.children = undefined
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	} else if (selectedComparator == 'category') {
+		performanceData.children = new Array<SmartCityPerformance>()
+		if (base.children) {
+			for (const dimension of base.children) {
+				if (dimension.children) {
+					for (const subDimension of dimension.children) {
+						if (subDimension.children) {
+							for (const category of subDimension.children) {
+								performanceData.children.push(category)
+								if (compare.children) {
+									for (const compareDimension of compare.children) {
+										if (compareDimension.children) {
+											for (const compareSubDimension of compareDimension.children) {
+												if (compareSubDimension.children) {
+													for (const compareCategory of compareSubDimension.children) {
+														if (category.name == compareCategory.name) {
+															category.children = [compareCategory]
+														}
+													}
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	const documentWidth = document.body.clientWidth
+	const documentHeight = document.body.clientHeight
+	destroySunburst()
+	createSunBurst(performanceData, {
+		width: documentWidth,
+		height: documentHeight,
+		radius: Math.min(documentWidth, documentHeight) / 2,
+		elementId: 'sunburst',
+		rootHtmlNode: '#sunburst-container',
+		name: base.name
+	})
+}
+
+let close = document.getElementById('sunburst-close')
 close?.addEventListener('click', (e) => {
 	d3.select('#sunburst-container')
 		.transition()
@@ -70,11 +180,11 @@ close?.addEventListener('click', (e) => {
 	toggle.checked = false
 })
 
-export async function createSunBurst(config: SunburstConfig) {
+export async function createSunBurst(nodeData: SmartCityPerformance, config: SunburstConfig) {
 	const { width, height, radius, rootHtmlNode = 'body', elementId } = config
 
-	var nodeData: any = await d3.json('public/alesundkpi.json')
-	randomizeData(nodeData)
+	// let nodeData: SmartCityPerformance = await d3.json('public/alesundkpi.json')
+	// randomizeData(nodeData)
 	/**
 	 * DATA SETUP
 	 */
@@ -103,7 +213,7 @@ export async function createSunBurst(config: SunburstConfig) {
 		.attr('viewBox', '0 0 ' + width + ' ' + height + '')
 		.classed('svg-content', true)
 
-	var zoom: any = d3
+	let zoom: any = d3
 		.zoom()
 		.scaleExtent([0, 8])
 		.on('zoom', function () {
@@ -286,11 +396,11 @@ export async function createSunBurst(config: SunburstConfig) {
 		const element = e.target as HTMLInputElement
 
 		if (compareToggled) {
-			var compareData: any = await d3.json('public/compare.json')
+			let compareData: any = await d3.json('public/compare.json')
 			randomizeData(compareData)
 			if (selectedComparator == 'dimension') {
 				let a = compareData.children
-				const element = Object.assign(nodeData.children)
+				const element = Object.assign(nodeData.children as any)
 				for (let index = 0; index < element.length; index++) {
 					let er = Object.assign({}, a[index])
 					er.children = undefined
@@ -343,7 +453,7 @@ export async function createSunBurst(config: SunburstConfig) {
 						return d.data.name
 					})
 					.reverse()
-					.join('/')}\n${isTargetAvailable(d) ? d.data.score.toFixed(2) : 0}%`
+					.join('/')}\n${isTargetAvailable(d) ? d.data.score?.toFixed(2) : 0}%`
 			})
 	}
 

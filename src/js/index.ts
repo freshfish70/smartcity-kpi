@@ -2,7 +2,8 @@ import '../scss/main.scss'
 
 import { createSunBurst, destroySunburst } from '@lib/sunburst/sunburst'
 import leaflet from 'leaflet'
-import { select } from 'd3'
+import { json, select } from 'd3'
+import { SmartCityPerformance } from '@lib/SmartCityPerformance'
 
 const documentWidth = document.body.clientWidth
 const documentHeight = document.body.clientHeight
@@ -76,7 +77,8 @@ for (const city of cities) {
 		})
 		.on('click', async () => {
 			if (sbc) {
-				await createSunBurst({
+				let data = await json<SmartCityPerformance>('public/alesundkpi.json')
+				await createSunBurst(data, {
 					width: documentWidth,
 					height: documentHeight,
 					radius: Math.min(documentWidth, documentHeight) / 2,
