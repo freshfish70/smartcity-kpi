@@ -1,32 +1,32 @@
 {
-	"name": "Bodø",
+	"name": "Trondheim",
 	"targetAvailable": 0,
 	"children": [{
 			"name": "society",
 			"targetAvailable": 0,
-			"score": 25,
+			"score": 35,
 			"children": [{
 					"name": "education",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "students ict access",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "school entrollments",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "higher education degrees",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "adult literacy",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -34,35 +34,35 @@
 				{
 					"name": "health",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "electronic health record",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "life expectancy",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "maternal mortality rate",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "doctors",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "health insurance coverage",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "in-patient hospital beds",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -70,15 +70,15 @@
 				{
 					"name": "culture",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "cultural expenditure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "cultural infrastructure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -86,15 +86,15 @@
 				{
 					"name": "housing",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "informal settlements",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "housing expenditure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -102,30 +102,30 @@
 				{
 					"name": "social inclusion",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "gender income equity",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "gini coefficient",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "poverty",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "voter participation",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "child care availability",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -133,50 +133,50 @@
 				{
 					"name": "safety",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "natural disaster related deaths",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "disaster related economic losses",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "resilience plans",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "at risk population",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "Emergency service response time",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "police service",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "fire service",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "violent crime rate",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "transportation fatalities",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -184,10 +184,10 @@
 				{
 					"name": "food security",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 						"name": "local food production",
-						"score": 25,
+						"score": 35,
 						"targetAvailable": 0
 					}]
 				}
@@ -195,40 +195,40 @@
 		},
 		{
 			"name": "economy",
-			"score": 25,
+			"score": 35,
 			"targetAvailable": 0,
 			"children": [{
 					"name": "ict infrastructure",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "household internet access",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "fixed broadband subscription",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wireless broadband subscription",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wireless broadband coverage 3G",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wireless breoadban coverage 4G",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "availability of wifi in public areas",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -236,40 +236,40 @@
 				{
 					"name": "water and sanitation",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "smart water meters",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "water supply ict monitoring",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "basic water supply",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "potable water supply",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "water supply loss",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wastewater collection",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "household sanitation",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -277,45 +277,45 @@
 				{
 					"name": "drainage",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 						"name": "drainage / storm water system ict monitoring",
-						"score": 25,
+						"score": 35,
 						"targetAvailable": 0
 					}]
 				},
 				{
 					"name": "electricity supply",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "smart electricity meters",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "electricity supply ict monitoring",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "demand response penetration",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "electricity system outage requency",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "electricity system outage time",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "access to electricity",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -323,80 +323,80 @@
 				{
 					"name": "transport",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "dynamic public transport information",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "traffic monitoring",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "intersection control",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "public transit network",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "public transit network convenience",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "bicycle network",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "private vehicles",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "public transport",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "walking",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "cycling",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "paratransport",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "travel time index",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "shared bicycles",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "shared vehicles",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "low-carbon emission passanger vehicles",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -404,25 +404,25 @@
 				{
 					"name": "public service",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "open data sets published",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "open data sets %",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "e-government",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "public sector e.procurement",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -430,20 +430,20 @@
 				{
 					"name": "innovation",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "R&D expenditure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "patents",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "small and medium sized enterprises",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -451,25 +451,25 @@
 				{
 					"name": "employment",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "unemployment rate",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "youth unemployment rate",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "tourism industry employment",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "ict industry employment",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -477,25 +477,25 @@
 				{
 					"name": "waste",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 						"name": "solid waste collection",
-						"score": 25,
+						"score": 35,
 						"targetAvailable": 0
 					}]
 				},
 				{
 					"name": "buildings",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "public building sustanability",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "integrated building management systems",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -503,15 +503,15 @@
 				{
 					"name": "urban planning",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "pedestrain infastructure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "urban development and spatial planning",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -521,39 +521,39 @@
 		{
 			"name": "environment",
 			"targetAvailable": 0,
-			"score": 25,
+			"score": 35,
 			"children": [{
 					"name": "air quality",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "air pollution PM2.5",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "air pollution PM100",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "air pollution N02",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "air pollution S02",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "air pollution 03",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "ghg emission",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -561,35 +561,35 @@
 				{
 					"name": "waster and sanitation",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "water quality",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "water consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "fresh water consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wastewater treated: primary",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wastewater treated: secondary",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "wasterwater treated: tertiary",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -597,35 +597,35 @@
 				{
 					"name": "waste",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "landfill",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "burnt",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "incinerated",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "recycled",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "other",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "open dump",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -633,15 +633,15 @@
 				{
 					"name": "environment quality",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "emf exposure",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "exposure to noise",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -649,25 +649,25 @@
 				{
 					"name": "public space and nature",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "green areas",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "green area accessibility",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "protected areas",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "recreational facilities",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]
@@ -675,25 +675,25 @@
 				{
 					"name": "energy",
 					"targetAvailable": 0,
-					"score": 25,
+					"score": 35,
 					"children": [{
 							"name": "renewable energy consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "electricity consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "residential thermal energy consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						},
 						{
 							"name": "public building energy consumption",
-							"score": 25,
+							"score": 35,
 							"targetAvailable": 0
 						}
 					]

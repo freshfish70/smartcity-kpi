@@ -10,6 +10,10 @@ import { getTextAnchor } from '@helpers/getTextAnchor'
 import { HierarchyNode, partition, D3ZoomEvent, select, selectAll } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
+export type Dataset = {
+	name: string
+	dataurl: string
+}
 export interface SunburstConfig {
 	width: number
 	height: number
@@ -17,7 +21,14 @@ export interface SunburstConfig {
 	rootHtmlNode: string
 	elementId: string
 	name: string
+	compare?: boolean
+	compareData?: Array<Dataset>
 }
+
+let originalDataset: SmartCityPerformance
+let originalDatasetName: string
+let originalConfig: SunburstConfig
+let compareDatasets: Array<Dataset> = []
 
 let toggle = document.getElementById('label-toggler') as HTMLInputElement
 toggle?.addEventListener('change', (e) => {
@@ -27,6 +38,7 @@ toggle?.addEventListener('change', (e) => {
 		.duration(200)
 		.style('opacity', (d: any) => {
 			if (!d.children && !element.checked) return 0
+			if (compare && d.children) return 0
 			return 1
 		})
 })
@@ -34,42 +46,59 @@ toggle?.addEventListener('change', (e) => {
 let compareToggler = document.getElementById('compare-toggler') as HTMLInputElement
 let compareToggled = false
 let selectedComparator = ''
+let optionsGenerated = false
 
 let dimensioncompare = document.getElementById('compare-dimension') as HTMLInputElement
 let subdimensioncompare = document.getElementById('compare-sub-dimension') as HTMLInputElement
 let categorycompare = document.getElementById('compare-category') as HTMLInputElement
 
-let selectedCity = document.getElementById('compare-selected-city') as HTMLInputElement
+let selectedCity = document.getElementById('compare-selected-city') as HTMLSelectElement
 selectedCity.addEventListener('change', (e: any) => {
 	console.log(e.target.value)
 })
 
+function generateOptions() {
+	if (optionsGenerated) return
+	let opt = ''
+	for (const dataset of compareDatasets) {
+		opt += `<option value="${dataset.dataurl}">${dataset.name}</option>`
+	}
+	selectedCity.innerHTML = opt
+	optionsGenerated = true
+}
+
+selectedCity.addEventListener('change', (e: any) => {
+	if (compareToggled) {
+		createComparator(selectedCity.selectedOptions[0].value)
+	}
+})
 dimensioncompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('dimension')
 	if (compareToggled) {
-		createComparator()
+		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
 subdimensioncompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('sub-dimension')
 	if (compareToggled) {
-		createComparator()
+		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
 categorycompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('category')
 	if (compareToggled) {
-		createComparator()
+		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
 
 compareToggler.addEventListener('change', async (e: any) => {
 	if (e.target.checked) {
 		compareToggled = true
-		createComparator()
+		createComparator(selectedCity.selectedOptions[0].value)
 	} else {
 		compareToggled = false
 		destroySunburst()
+		createSunBurst(originalDataset, originalConfig)
 	}
 })
 
@@ -77,9 +106,17 @@ async function setSelectedComparator(selected: string) {
 	selectedComparator = selected
 }
 
-async function createComparator() {
-	let base: SmartCityPerformance = await d3.json('public/alesundkpi.json')
-	let compare: SmartCityPerformance = await d3.json('public/kip2.json')
+let lastDataset = ''
+let lastCompareSet: SmartCityPerformance
+let compare: SmartCityPerformance
+async function createComparator(dataseturl: string) {
+	let base: SmartCityPerformance = JSON.parse(JSON.stringify(originalDataset))
+	if (dataseturl != lastDataset) {
+		lastCompareSet = await d3.json(`public/kpi/${dataseturl}.json`)
+		randomizeData(lastCompareSet)
+	}
+	compare = JSON.parse(JSON.stringify(lastCompareSet))
+	lastDataset = dataseturl
 
 	let performanceData: SmartCityPerformance = {
 		name: base.name,
@@ -166,7 +203,8 @@ async function createComparator() {
 		radius: Math.min(documentWidth, documentHeight) / 2,
 		elementId: 'sunburst',
 		rootHtmlNode: '#sunburst-container',
-		name: base.name
+		name: base.name + ' / ' + compare.name,
+		compare: true
 	})
 }
 
@@ -178,13 +216,31 @@ close?.addEventListener('click', (e) => {
 		.style('transform', 'translate(100vw,0px)')
 		.call(destroySunburst)
 	toggle.checked = false
+	optionsGenerated = false
 })
 
 export async function createSunBurst(nodeData: SmartCityPerformance, config: SunburstConfig) {
-	const { width, height, radius, rootHtmlNode = 'body', elementId } = config
+	const {
+		width,
+		height,
+		radius,
+		rootHtmlNode = 'body',
+		elementId,
+		compare = false,
+		compareData
+	} = config
 
-	// let nodeData: SmartCityPerformance = await d3.json('public/alesundkpi.json')
-	// randomizeData(nodeData)
+	if (!compare) {
+		originalDataset = nodeData
+		originalConfig = config
+		randomizeData(nodeData)
+	}
+
+	if (compareData) {
+		compareDatasets = compareData
+		generateOptions()
+	}
+
 	/**
 	 * DATA SETUP
 	 */
@@ -281,28 +337,28 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 						})
 						.append('path')
 						.on('mouseover', (d: any) => {
-							let selectedNodeClass = 'node '
-							if (!d.children) {
-								selectedNodeClass = 'category'
-							} else if (d.parent && !d.parent.parent) {
-								selectedNodeClass = 'dimension'
-							} else {
-								selectedNodeClass = 'sub-dimension'
-							}
-							selectAll('.node').attr('opacity', (e: any) => {
-								let myNodeClass = 'node'
-								if (!e.children) {
-									myNodeClass = 'category'
-								} else if (e.parent && !e.parent.parent) {
-									myNodeClass = 'dimension'
-								} else {
-									myNodeClass = 'sub-dimension'
-								}
-								if (myNodeClass == selectedNodeClass) {
-									return 1
-								}
-								return 0.2
-							})
+							// let selectedNodeClass = 'node '
+							// if (!d.children) {
+							// 	selectedNodeClass = 'category'
+							// } else if (d.parent && !d.parent.parent) {
+							// 	selectedNodeClass = 'dimension'
+							// } else {
+							// 	selectedNodeClass = 'sub-dimension'
+							// }
+							// selectAll('.node').attr('opacity', (e: any) => {
+							// 	let myNodeClass = 'node'
+							// 	if (!e.children) {
+							// 		myNodeClass = 'category'
+							// 	} else if (e.parent && !e.parent.parent) {
+							// 		myNodeClass = 'dimension'
+							// 	} else {
+							// 		myNodeClass = 'sub-dimension'
+							// 	}
+							// 	if (myNodeClass == selectedNodeClass) {
+							// 		return 1
+							// 	}
+							// 	return 0.2
+							// })
 						})
 						.on('mouseout', (e: any) => {
 							selectAll('.node').attr('opacity', (e: any) => {
@@ -312,7 +368,9 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 						.attr('display', function (d) {
 							return d.depth ? null : 'none'
 						})
-						.attr('d', sunburstArc)
+						.attr('d', (e) => {
+							return sunburstArc(!compare)(e)
+						})
 
 						.style('stroke', '#fff')
 						.attr('fill', (d) => {
@@ -388,32 +446,6 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 		}, 20)
 	})
 
-	toggle?.addEventListener('change', async (e) => {
-		compareToggled = !compareToggled
-		const documentWidth = document.body.clientWidth
-		const documentHeight = document.body.clientHeight
-
-		const element = e.target as HTMLInputElement
-
-		if (compareToggled) {
-			let compareData: any = await d3.json('public/compare.json')
-			randomizeData(compareData)
-			if (selectedComparator == 'dimension') {
-				let a = compareData.children
-				const element = Object.assign(nodeData.children as any)
-				for (let index = 0; index < element.length; index++) {
-					let er = Object.assign({}, a[index])
-					er.children = undefined
-					element[index].children = er
-				}
-
-				removeSunburst()
-				drawSunburst()
-			} else if (selectedComparator == 'sub-dimension') {
-			} else {
-			}
-		}
-	})
 	d3.selectAll('.coparator-selector').on('click', () => {})
 
 	function createText() {
@@ -426,9 +458,10 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 			.append('text')
 			.attr('class', 'node-label')
 			.attr('transform', function (d: any) {
-				return `translate(${sunburstArc.centroid(d)})rotate(${getTextRotation(d)})`
+				return `translate(${sunburstArc(!compare).centroid(d)})rotate(${getTextRotation(d)})`
 			})
 			.attr('dx', (d: any) => {
+				if (!d.children && compare) return (getTextRotation(d) < 180 ? radius : -radius) * 0.195
 				if (!d.children) return (getTextRotation(d) < 180 ? radius : -radius) * 0.065
 				return 0
 			})
@@ -438,7 +471,8 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 			})
 			.style('fill', '#fff')
 			.style('opacity', (d: any) => {
-				if (!d.children) return 0
+				if (!d.children && !toggle.checked) return 0
+				if (compare && d.children) return 0
 				return 1
 			})
 			.style('font-weight', '400')
