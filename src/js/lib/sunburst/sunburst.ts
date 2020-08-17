@@ -45,7 +45,7 @@ toggle?.addEventListener('change', (e) => {
 
 let compareToggler = document.getElementById('compare-toggler') as HTMLInputElement
 let compareToggled = false
-let selectedComparator = ''
+let selectedComparator = 'dimension'
 let optionsGenerated = false
 
 let dimensioncompare = document.getElementById('compare-dimension') as HTMLInputElement
