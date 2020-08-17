@@ -38,7 +38,7 @@ toggle?.addEventListener('change', (e) => {
 		.duration(200)
 		.style('opacity', (d: any) => {
 			if (!d.children && !element.checked) return 0
-			if (compare && d.children) return 0
+			if (compareToggled && d.children) return 0
 			return 1
 		})
 })
