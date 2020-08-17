@@ -9,13 +9,14 @@ export function getAverageChildScores(node: SmartCityPerformance, depth: number 
 	depth -= 1
 	let score = 0
 	if (node.targetAvailable == TargetAvailable.AVAILABLE) {
-		score += node.score && !node.children ? node.score : 0
+		score += node.score ? node.score : 0
 	}
 	if (depth < 0) return score
 	if (node.children) {
 		for (const child of node.children) {
 			score += getAverageChildScores(child, depth) / node.children.length
 		}
+		node.score = score
 	}
 	return score
 }

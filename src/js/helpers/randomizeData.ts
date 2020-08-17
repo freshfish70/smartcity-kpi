@@ -9,6 +9,7 @@ export const randomizeData = (data: SmartCityPerformance): SmartCityPerformance 
 		let noTarget = Math.random()
 		let dataReported = Math.random()
 		if (data.children) {
+			data.score = undefined
 			if (
 				(noTarget < 0.03 || dataReported < 0.03) &&
 				dataVailableForNode == TargetAvailable.AVAILABLE
