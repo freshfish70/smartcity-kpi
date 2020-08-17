@@ -361,9 +361,9 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 							// })
 						})
 						.on('mouseout', (e: any) => {
-							selectAll('.node').attr('opacity', (e: any) => {
-								return 1
-							})
+							// selectAll('.node').attr('opacity', (e: any) => {
+							// 	return 1
+							// })
 						})
 						.attr('display', function (d) {
 							return d.depth ? null : 'none'
@@ -471,6 +471,8 @@ export async function createSunBurst(nodeData: SmartCityPerformance, config: Sun
 			})
 			.style('fill', '#fff')
 			.style('opacity', (d: any) => {
+				console.log(compare)
+
 				if (!d.children && !toggle.checked) return 0
 				if (compare && d.children) return 0
 				return 1
