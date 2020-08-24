@@ -12,21 +12,8 @@ import { tooltip } from '@helpers/tooltip'
 import { getTextAnchorByAngle } from '@helpers/getTextAnchor'
 import { HierarchyNode, partition, D3ZoomEvent, select, selectAll } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
-
-export type Dataset = {
-	name: string
-	dataurl: string
-}
-export interface SunburstConfig {
-	width: number
-	height: number
-	radius: number
-	rootHtmlNode: string
-	elementId: string
-	name: string
-	compare?: boolean
-	compareData?: Array<Dataset>
-}
+import { SunburstConfig } from './SunburstConfig'
+import { Dataset } from '@lib/Dataset'
 
 let originalDataset: SmartCityPerformance
 let originalConfig: SunburstConfig
