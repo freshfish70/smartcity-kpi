@@ -111,7 +111,7 @@ let compare: SmartCityPerformance
 async function createComparator(dataseturl: string) {
 	let base: SmartCityPerformance = JSON.parse(JSON.stringify(originalDataset))
 	if (dataseturl != lastDataset) {
-		lastCompareSet = await d3.json(`public/kpi/${dataseturl}.json`)
+		lastCompareSet = await d3.json(dataseturl)
 		randomizeData(lastCompareSet)
 	}
 	compare = JSON.parse(JSON.stringify(lastCompareSet))
