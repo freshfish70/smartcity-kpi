@@ -1,6 +1,8 @@
 import { HierarchyRectangularNode, arc } from 'd3'
 
+// This module calculates the sizes of each arc of the sunburst.
 export const sunburstArc = (scale = false) => {
+	// Uses any type, as it does not depend on the generic type
 	return arc<HierarchyRectangularNode<any>>()
 		.startAngle(function (d) {
 			return d.x0
