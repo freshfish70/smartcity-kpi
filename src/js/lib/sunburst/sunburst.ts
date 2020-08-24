@@ -4,7 +4,7 @@ import { colorScaleForNoValues, colorScaleForValues } from '@helpers/Colors'
 import { getTextRotation } from '@helpers/getTextRotation'
 import {
 	SmartCityPerformance,
-	TargetAvailable,
+	TargetAvailable
 } from '@lib/SmartCityPerformance'
 import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend/Legend'
@@ -19,8 +19,34 @@ let originalDataset: SmartCityPerformance
 let originalConfig: SunburstConfig
 let compareDatasets: Array<Dataset> = []
 
-let toggle = document.getElementById('label-toggler') as HTMLInputElement
-toggle?.addEventListener('change', (e) => {
+let compareToggled = false
+let selectedComparator = 'dimension'
+let optionsGenerated = false
+
+// GET ALL HTML ELEMENTS
+const labelToggler = document.getElementById(
+	'label-toggler'
+) as HTMLInputElement
+
+const compareToggler = document.getElementById(
+	'compare-toggler'
+) as HTMLInputElement
+
+const dimensionCompare = document.getElementById(
+	'compare-dimension'
+) as HTMLInputElement
+const subDimensionCompare = document.getElementById(
+	'compare-sub-dimension'
+) as HTMLInputElement
+const categoryCompare = document.getElementById(
+	'compare-category'
+) as HTMLInputElement
+
+const selectedCity = document.getElementById(
+	'compare-selected-city'
+) as HTMLSelectElement
+
+labelToggler?.addEventListener('change', (e) => {
 	const element = e.target as HTMLInputElement
 	d3.selectAll('.node-label')
 		.transition()
@@ -32,26 +58,6 @@ toggle?.addEventListener('change', (e) => {
 		})
 })
 
-let compareToggler = document.getElementById(
-	'compare-toggler'
-) as HTMLInputElement
-let compareToggled = false
-let selectedComparator = 'dimension'
-let optionsGenerated = false
-
-let dimensioncompare = document.getElementById(
-	'compare-dimension'
-) as HTMLInputElement
-let subdimensioncompare = document.getElementById(
-	'compare-sub-dimension'
-) as HTMLInputElement
-let categorycompare = document.getElementById(
-	'compare-category'
-) as HTMLInputElement
-
-let selectedCity = document.getElementById(
-	'compare-selected-city'
-) as HTMLSelectElement
 selectedCity.addEventListener('change', (e: any) => {
 	console.log(e.target.value)
 })
@@ -71,19 +77,19 @@ selectedCity.addEventListener('change', (e: any) => {
 		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
-dimensioncompare.addEventListener('change', (e: any) => {
+dimensionCompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('dimension')
 	if (compareToggled) {
 		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
-subdimensioncompare.addEventListener('change', (e: any) => {
+subDimensionCompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('sub-dimension')
 	if (compareToggled) {
 		createComparator(selectedCity.selectedOptions[0].value)
 	}
 })
-categorycompare.addEventListener('change', (e: any) => {
+categoryCompare.addEventListener('change', (e: any) => {
 	if (e.target.checked) setSelectedComparator('category')
 	if (compareToggled) {
 		createComparator(selectedCity.selectedOptions[0].value)
@@ -119,7 +125,7 @@ async function createComparator(dataseturl: string) {
 
 	let performanceData: SmartCityPerformance = {
 		name: base.name,
-		targetAvailable: base.targetAvailable,
+		targetAvailable: base.targetAvailable
 	}
 	if (selectedComparator == 'dimension') {
 		performanceData.children = base.children
@@ -203,7 +209,7 @@ async function createComparator(dataseturl: string) {
 		elementId: 'sunburst',
 		rootHtmlNode: '#sunburst-container',
 		name: base.name + ' / ' + compare.name,
-		compare: true,
+		compare: true
 	})
 }
 
@@ -214,7 +220,7 @@ close?.addEventListener('click', (e) => {
 		.duration(350)
 		.style('transform', 'translate(100vw,0px)')
 		.call(destroySunburst)
-	toggle.checked = false
+	labelToggler.checked = false
 	optionsGenerated = false
 })
 
@@ -229,7 +235,7 @@ export async function createSunBurst(
 		rootHtmlNode = 'body',
 		elementId,
 		compare = false,
-		compareData,
+		compareData
 	} = config
 
 	if (!compare) {
@@ -256,7 +262,7 @@ export async function createSunBurst(
 
 	let partitionedRoot = partition<SmartCityPerformance>().size([
 		2 * Math.PI,
-		radius,
+		radius
 	])(hierarchyDataNode)
 
 	/**
@@ -439,7 +445,7 @@ export async function createSunBurst(
 				if (d.colorValue === selectedScoreValue) selectedScoreValue = null
 				else selectedScoreValue = d.colorValue
 				render()
-			},
+			}
 		} as LegendConfig)
 	}
 
@@ -456,7 +462,7 @@ export async function createSunBurst(
 			config.radius = Math.min(config.width, config.height) / 2
 			partitionedRoot = partition<SmartCityPerformance>().size([
 				2 * Math.PI,
-				config.radius,
+				config.radius
 			])(hierarchyDataNode)
 			sunburst.attr('viewBox', '0 0 ' + config.width + ' ' + config.height + '')
 			removeSunburst()
@@ -492,7 +498,7 @@ export async function createSunBurst(
 			})
 			.style('fill', '#fff')
 			.style('opacity', (d: any) => {
-				if (!d.children && !toggle.checked) return 0
+				if (!d.children && !labelToggler.checked) return 0
 				if (compare && d.children) return 0
 				return 1
 			})
