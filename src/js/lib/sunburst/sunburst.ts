@@ -9,7 +9,7 @@ import {
 import { randomizeData } from '@helpers/randomizeData'
 import { Legend, LegendConfig } from '@lib/Legend/Legend'
 import { tooltip } from '@helpers/tooltip'
-import { getTextAnchor } from '@helpers/getTextAnchor'
+import { getTextAnchorByAngle } from '@helpers/getTextAnchor'
 import { HierarchyNode, partition, D3ZoomEvent, select, selectAll } from 'd3'
 import { sunburstArc } from '@lib/sunburst/sunburstArc'
 
@@ -483,7 +483,7 @@ export async function createSunBurst(
 			.selectAll('.node')
 
 			.attr('text-anchor', (d: unknown) => {
-				return getTextAnchor(d)
+				return getTextAnchorByAngle(d)
 			})
 			.append('text')
 			.attr('class', 'node-label')
@@ -531,7 +531,7 @@ export function destroySunburst() {
 	d3.select('#legend-container').remove()
 }
 
-export function destroyComparatorSunburst() {
-	d3.select('#sunburst-comparator-container').remove()
-	d3.select('#legend-container').remove()
-}
+// export function destroyComparatorSunburst() {
+// 	d3.select('#sunburst-comparator-container').remove()
+// 	d3.select('#legend-container').remove()
+// }
